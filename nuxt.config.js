@@ -4,7 +4,7 @@ export default {
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
   */
-  mode: 'universal',
+  ssr: true,
 
   /*
   ** Nuxt target
@@ -39,6 +39,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~plugins/bootstrap.js', ssr: false }
   ],
 
   /*
@@ -59,8 +60,8 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    // Doc: https://http.nuxtjs.org
-    '@nuxt/http'
+    '@nuxt/http', // Doc: https://http.nuxtjs.org
+    'bootstrap-vue/nuxt', // Doc: https://bootstrap-vue.js.org/docs/
   ],
 
   /*
