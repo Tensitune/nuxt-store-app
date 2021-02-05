@@ -39,8 +39,7 @@ export default {
   },
   methods: {
     isRouteActive(id) {
-      if (id === '/') return true
-      if (this.$route.path.includes(id) && id !== '/') return true
+      if (this.$route.path.includes(id)) return true
       return false
     }
   }
