@@ -32,15 +32,14 @@ export default {
   ** Global CSS
   */
   css: [
+    '~/assets/sass/app.scss'
   ],
 
   /*
   ** Plugins to load before mounting the App
   ** https://nuxtjs.org/guide/plugins
   */
-  plugins: [
-    { src: '~plugins/bootstrap.js', ssr: false }
-  ],
+  plugins: [],
 
   /*
   ** Auto import components
@@ -52,8 +51,6 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    // Doc: https://github.com/nuxt-community/eslint-module
-    '@nuxtjs/eslint-module',
   ],
 
   /*
@@ -61,7 +58,18 @@ export default {
   */
   modules: [
     '@nuxt/http', // Doc: https://http.nuxtjs.org
-    'bootstrap-vue/nuxt', // Doc: https://bootstrap-vue.js.org/docs/
+    ['nuxt-fontawesome', {
+      imports: [
+        {
+          set: '@fortawesome/free-solid-svg-icons',
+          icons: ['fas']
+        },
+        {
+          set: '@fortawesome/free-brands-svg-icons',
+          icons: ['fab']
+        }
+      ]
+    }]
   ],
 
   /*
