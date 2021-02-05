@@ -1,0 +1,109 @@
+@import 'bootstrap/scss/bootstrap-grid';
+
+$main-color: #e23e57;
+$second-color: #88304e;
+$navbar-first-color: #2d132c;
+$navbar-second-color: #240041;
+
+$soft-white: #edf0f1;
+
+*, *::before, *::after {
+  font-family: Source Sans Pro,sans-serif;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  color: $soft-white;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: $soft-white;
+}
+
+a {
+  text-decoration: none;
+}
+
+header {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 10%;
+  background: linear-gradient(
+    145deg,
+    $navbar-first-color,
+    $navbar-second-color
+  );
+}
+
+.logo {
+  cursor: pointer;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  background: linear-gradient(
+    to right,
+    $main-color,
+    $second-color
+  );
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+	animation: gradient_logo 15s ease infinite;
+}
+
+.nav-links {
+  list-style: none;
+}
+
+.nav-links li {
+  display: inline-block;
+  padding: 0px 20px;
+}
+
+.nav-links li a {
+  transition: 0.3s;
+}
+
+.nav-links li a:hover {
+  color: $main-color;
+}
+
+.nav-links li a.active {
+  color: $main-color;
+}
+
+.btn-login {
+  padding: 9px 25px;
+  background-color: $second-color;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.btn-login:hover {
+  background-color: $main-color;
+}
+
+@keyframes gradient_logo {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
