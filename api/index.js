@@ -1,3 +1,6 @@
+require('dotenv').config()
+require('./db').Init()
+
 const express = require('express')
 const app = express()
 
