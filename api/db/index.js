@@ -1,3 +1,4 @@
+const fs = require('fs')
 const mysql = require('mysql')
 
 const pool = mysql.createPool({
@@ -17,21 +18,21 @@ pool.on('error', err => {
   console.error(err)
 })
 
-const createTables = `
-  CREATE TABLE IF NOT EXISTS \`users\` (
-    \`user_id\` int NOT NULL AUTO_INCREMENT,
-    \`username\` varchar(255) NOT NULL,
-    \`password\` varchar(255) NOT NULL,
-    \`firstname\` varchar(255),
-    \`lastname\` varchar(255),
-    PRIMARY KEY (\`user_id\`)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-`
+// Извлечение SQL-запросов из schema.sql.
+const schemaQueries = fs.readFileSync('database/migrations/schema.sql', 'utf8')
+  .replace(/(\r\n|\n|\r)/gm, ' ') // удаление новых строк
+  .replace(/\s+/g, ' ') // избыточное пустое пространство
+  .split(';') // разделить на все операторы
+  .map(Function.prototype.call, String.prototype.trim)
+  .filter(function(el) { return el.length !== 0 }) // удаляем пустые элементы
 
 function Init() {
-  pool.query(createTables, err => {
-    if (err) throw err
-    console.log('Таблицы в базе данных были успешно созданы!')
+  if (schemaQueries === undefined) return
+
+  // Отправка SQL-запросов в БД
+  schemaQueries.forEach(query => {
+    // TODO - сделать задержку или что-то подобное
+    pool.query(query, err => { if (err) throw err })
   })
 }
 
