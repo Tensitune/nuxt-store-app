@@ -30,9 +30,16 @@ function Init() {
   if (schemaQueries === undefined) return
 
   // Отправка SQL-запросов в БД
-  schemaQueries.forEach(query => {
-    // TODO - сделать задержку или что-то подобное
-    pool.query(query, err => { if (err) throw err })
+  schemaQueries.forEach(async query => {
+    const queryPromise = new Promise((resolve, reject) => {
+      pool.query(query, err => {
+        if (err) return reject(new Error(`${err.message}`))
+      })
+
+      resolve()
+    })
+
+    await queryPromise
   })
 }
 
