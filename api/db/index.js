@@ -1,3 +1,4 @@
+const { query } = require('express')
 const fs = require('fs')
 const mysql = require('mysql')
 
@@ -26,21 +27,20 @@ const schemaQueries = fs.readFileSync('database/migrations/schema.sql', 'utf8')
   .map(Function.prototype.call, String.prototype.trim)
   .filter(function(el) { return el.length !== 0 }) // удаляем пустые элементы
 
-function Init() {
+async function Init() {
   if (schemaQueries === undefined) return
 
   // Отправка SQL-запросов в БД
-  schemaQueries.forEach(async query => {
+  for (const query of schemaQueries) {
     const queryPromise = new Promise((resolve, reject) => {
       pool.query(query, err => {
         if (err) return reject(new Error(`${err.message}`))
+        resolve()
       })
-
-      resolve()
     })
 
     await queryPromise
-  })
+  }
 }
 
 module.exports = {
