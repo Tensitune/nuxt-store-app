@@ -27,8 +27,6 @@ const schemaQueries = fs.readFileSync('database/migrations/schema.sql', 'utf8')
   .filter(function(el) { return el.length !== 0 }) // удаляем пустые элементы
 
 async function Init() {
-  if (schemaQueries === undefined) return
-
   // Отправка SQL-запросов в БД
   for (const query of schemaQueries) {
     const queryPromise = new Promise((resolve, reject) => {
