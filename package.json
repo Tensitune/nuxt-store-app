@@ -13,27 +13,20 @@
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-brands-svg-icons": "^5.15.2",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
-    "@fortawesome/vue-fontawesome": "^2.0.2",
     "@nuxt/http": "latest",
     "@nuxtjs/axios": "^5.12.5",
-    "bootstrap": "^5.0.0-beta2",
+    "bcrypt": "^5.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jquery": "^3.5.1",
-    "mongodb": "^3.6.4",
     "mysql": "^2.18.1",
-    "nuxt": "latest",
-    "nuxt-fontawesome": "^0.4.0",
-    "passport": "^0.4.1",
-    "passport-local": "^1.0.0"
+    "nuxt": "latest"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^5.0.0",
     "@nuxtjs/eslint-module": "^3.0.2",
+    "@nuxtjs/vuetify": "^1.11.3",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.2.0",
     "eslint-plugin-nuxt": "^2.0.0",
