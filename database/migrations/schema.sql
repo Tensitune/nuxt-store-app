@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   CONSTRAINT `FK_product_review_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `shopping_cart` (
+CREATE TABLE IF NOT EXISTS `shopping_carts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS `cart_items` (
   `quantity` int(11) DEFAULT 1,
   PRIMARY KEY (`id`),
   KEY `FK_cart_item_carts` (`cart_id`),
-  CONSTRAINT `FK_cart_item_carts` FOREIGN KEY (`cart_id`) REFERENCES `shopping_cart` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_cart_item_carts` FOREIGN KEY (`cart_id`) REFERENCES `shopping_carts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_cart_item_products` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
