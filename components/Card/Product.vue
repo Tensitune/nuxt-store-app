@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="loading" class="mx-auto my-12" max-width="374">
+  <v-card :loading="loading" class="mx-auto my-6" max-width="320" shaped>
     <template slot="progress">
       <v-progress-linear color="deep-purple" height="10" indeterminate />
     </template>
@@ -22,6 +22,8 @@
       </div>
 
       <div>{{ description }}</div>
+
+      <strong :class="stock > 0 ? 'green--text' : 'orange--text'">{{ stock > 0 ? `${stock} в наличии` : 'Нет в наличии' }}</strong>
     </v-card-text>
 
     <v-divider class="mx-4" />
@@ -36,7 +38,7 @@
 
 <script>
 export default {
-  props: ['title', 'description', 'image', 'price', 'reviews'],
+  props: ['title', 'description', 'image', 'price', 'stock', 'reviews'],
   data: () => ({
     loading: false,
     selection: 1
