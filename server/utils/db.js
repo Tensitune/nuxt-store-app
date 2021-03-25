@@ -99,10 +99,28 @@ function addOrUpdate(table, data) {
   })
 }
 
+function deleteRows(table, data) {
+  return new Promise((resolve, reject) => {
+    const query = `DELETE FROM ${table} WHERE ?`
+
+    if (Array.isArray(data)) {
+      sendEscapeQueries(query, data, 1)
+      resolve()
+      return
+    }
+
+    pool.query(query, data, err => {
+      if (err) reject(err)
+      resolve()
+    })
+  })
+}
+
 module.exports = {
   Init: Init,
   getRows: getRows,
   find: find,
   findOne: findOne,
-  addOrUpdate: addOrUpdate
+  addOrUpdate: addOrUpdate,
+  delete: deleteRows
 }
