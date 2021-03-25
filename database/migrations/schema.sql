@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `lastname` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
+  `admin` boolean DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE(`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `description` varchar(1000) DEFAULT NULL,
   `published_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `price` int(11) DEFAULT 0,
+  `stock` int(11) DEFAULT 0,
   `thumbnail_uri` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_products_categories` (`cat_id`),
