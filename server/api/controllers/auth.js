@@ -41,8 +41,11 @@ router.post('/signup', (req, res) => {
       lastname: req.body.lastname,
       phone: req.body.phone,
       address: req.body.address
-    }).then(() => {
-      res.json({ status: 'success' })
+    }).then(userId => {
+      req.session.userid = userId
+      addOrUpdate('shopping_carts', { user_id: userId }).then(() => {
+        res.json({ status: 'success' })
+      })
     }).catch(err => DBError(res, err))
   }).catch(err => DBError(res, err))
 })
