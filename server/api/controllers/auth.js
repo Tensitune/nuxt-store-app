@@ -6,7 +6,7 @@ const { DBError } = require('../../utils')
 const { findOne, addOrUpdate } = require('../../utils/db')
 
 router.post('/signin', (req, res) => {
-  if (!(req.body.username || req.body.password)) return
+  if (!(req.body.username && req.body.password)) return
 
   findOne('users', { username: req.body.username }).then(user => {
     if (!user) {
