@@ -1,14 +1,3 @@
 .container {
   max-width: 1200px !important;
 }
-
-.hoverscale {
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-.hoverscale:hover {
-  -webkit-transform: scale(1.05);
-  -webkit-box-shadow: 0 0 15px rgba(0,0,0,.3);
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(0,0,0,.3);
-}
