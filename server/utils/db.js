@@ -65,36 +65,13 @@ function findOne(table, data) {
   })
 }
 
-async function sendEscapeQueries(query, data, escapes) {
-  const escapeData = []
-
-  for (const el of data) {
-    for (let i = 0; i < escapes; i++) {
-      escapeData.push(el)
-    }
-
-    await new Promise((resolve, reject) => {
-      pool.query(query, escapeData, err => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
-  }
-}
-
 function addOrUpdate(table, data) {
   return new Promise((resolve, reject) => {
     const query = `INSERT INTO ${table} SET ? ON DUPLICATE KEY UPDATE ?`
 
-    if (Array.isArray(data)) {
-      sendEscapeQueries(query, data, 2)
-      resolve()
-      return
-    }
-
-    pool.query(query, [data, data], err => {
+    pool.query(query, [data, data], (err, results) => {
       if (err) reject(err)
-      resolve()
+      resolve(results.insertId)
     })
   })
 }
@@ -103,15 +80,9 @@ function deleteRows(table, data) {
   return new Promise((resolve, reject) => {
     const query = `DELETE FROM ${table} WHERE ?`
 
-    if (Array.isArray(data)) {
-      sendEscapeQueries(query, data, 1)
-      resolve()
-      return
-    }
-
-    pool.query(query, data, err => {
+    pool.query(query, data, (err, results) => {
       if (err) reject(err)
-      resolve()
+      resolve(results.insertId)
     })
   })
 }
