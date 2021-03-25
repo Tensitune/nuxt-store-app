@@ -104,17 +104,7 @@ export default {
           return
         }
 
-        this.signupData.username = ''
-        this.signupData.password = ''
-        this.signupData.firstname = ''
-        this.signupData.lastname = ''
-        this.signupData.phone = ''
-        this.signupData.address = ''
-
-        this.passwordConfirm = ''
-        this.passwordVisible = false
-
-        this.dialog = false
+        window.location.reload()
       }).catch(err => {
         console.log(err)
         this.error = 'Что-то пошло не так'
