@@ -101,7 +101,6 @@ function addOrUpdate(table, data) {
 
 module.exports = {
   Init: Init,
-  query: pool.query,
   getRows: getRows,
   find: find,
   findOne: findOne,
