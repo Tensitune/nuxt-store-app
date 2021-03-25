@@ -59,7 +59,7 @@ function find(table, data) {
 function findOne(table, data) {
   return new Promise(resolve => {
     find(table, data).then(results => {
-      if (!results) resolve(false)
+      if (!results) return resolve(false)
       resolve(results[0])
     })
   })
@@ -70,7 +70,7 @@ function addOrUpdate(table, data) {
     const query = `INSERT INTO ${table} SET ? ON DUPLICATE KEY UPDATE ?`
 
     pool.query(query, [data, data], (err, results) => {
-      if (err) reject(err)
+      if (err) return reject(err)
       resolve(results.insertId)
     })
   })
@@ -81,7 +81,7 @@ function deleteRows(table, data) {
     const query = `DELETE FROM ${table} WHERE ?`
 
     pool.query(query, data, (err, results) => {
-      if (err) reject(err)
+      if (err) return reject(err)
       resolve(results.insertId)
     })
   })
