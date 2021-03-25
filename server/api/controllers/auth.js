@@ -2,6 +2,7 @@ const { Router } = require('express')
 const router = Router()
 
 const bcrypt = require('bcrypt')
+const { DBError } = require('../../utils')
 const { findOne, addOrUpdate } = require('../../utils/db')
 
 router.post('/signin', (req, res) => {
@@ -20,7 +21,7 @@ router.post('/signin', (req, res) => {
 
     req.session.userid = user.id
     res.json({ status: 'success' })
-  })
+  }).catch(err => DBError(res, err))
 })
 
 router.post('/signup', (req, res) => {
@@ -42,11 +43,8 @@ router.post('/signup', (req, res) => {
       address: req.body.address
     }).then(() => {
       res.json({ status: 'success' })
-    }).catch(err => {
-      console.error(err)
-      res.json({ status: 'error', error: 'Что-то пошло не так' })
-    })
-  })
+    }).catch(err => DBError(res, err))
+  }).catch(err => DBError(res, err))
 })
 
 router.get('/signout', (req, res) => {
@@ -70,7 +68,7 @@ router.get('/profile', (req, res) => {
 
     delete user.password
     res.json({ status: 'success', data: user })
-  })
+  }).catch(err => DBError(res, err))
 })
 
 module.exports = router
