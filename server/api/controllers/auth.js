@@ -69,7 +69,7 @@ router.get('/profile', (req, res) => {
     }
 
     delete user.password
-    res.status(200).json({ status: 'success', user: user })
+    res.json({ status: 'success', data: user })
   })
 })
 
