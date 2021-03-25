@@ -45,7 +45,7 @@ router.post('/signup', (req, res) => {
       req.session.userid = userId
       addOrUpdate('shopping_carts', { user_id: userId }).then(() => {
         res.json({ status: 'success' })
-      })
+      }).catch(err => DBError(res, err))
     }).catch(err => DBError(res, err))
   }).catch(err => DBError(res, err))
 })
