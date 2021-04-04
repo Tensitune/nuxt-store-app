@@ -66,7 +66,7 @@ export default {
   ** Server Middleware
   */
   serverMiddleware: {
-    '/api': '~/server/api'
+    '/api': '~/api'
   },
 
   /*
