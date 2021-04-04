@@ -13,7 +13,7 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-app.use(require('./controllers/auth'))
+app.use(require('./routes/auth'))
 
 module.exports = app
 if (require.main === module) {
