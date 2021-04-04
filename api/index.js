@@ -4,9 +4,6 @@ const express = require('express')
 const session = require('express-session')
 const app = express()
 
-const { Init } = require('../utils/db')
-Init()
-
 app.use(session({
   secret: process.env.SECRET,
   resave: true,
