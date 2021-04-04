@@ -11,7 +11,7 @@ router.post('/signin',
     const user = await db.findOne('users', { username: value })
     if (!user) return Promise.reject(new Error('Такого пользователя не существует'))
   }),
-  check('password', 'Требуется пароль').not().isEmpty(),
+  check('password', 'Требуется пароль').notEmpty(),
   async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -34,9 +34,9 @@ router.post('/signup',
     const user = await db.findOne('users', { username: value })
     if (user) return Promise.reject(new Error('Имя пользователя уже занято'))
   }),
-  check('password', 'Требуется пароль').not().isEmpty(),
-  check('firstname', 'Требуется имя').not().isEmpty(),
-  check('lastname', 'Требуется фамилия').not().isEmpty(),
+  check('password', 'Требуется пароль').notEmpty(),
+  check('firstname', 'Требуется имя').notEmpty(),
+  check('lastname', 'Требуется фамилия').notEmpty(),
   async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
