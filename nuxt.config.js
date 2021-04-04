@@ -1,3 +1,4 @@
+const isDev = process.env.NODE_ENV !== 'production'
 
 export default {
   /*
@@ -5,6 +6,10 @@ export default {
   ** See https://nuxtjs.org/api/configuration-mode
   */
   ssr: true,
+
+  ...(!isDev && {
+    modern: 'client'
+  }),
 
   /*
   ** Nuxt target
@@ -24,7 +29,7 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'shortcut icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
 
@@ -51,6 +56,7 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
+    '@nuxtjs/eslint-module'
   ],
 
   /*
@@ -67,6 +73,10 @@ export default {
   */
   serverMiddleware: {
     '/api': '~/api'
+  },
+
+  router: {
+    prefetchLinks: false
   },
 
   /*
@@ -91,18 +101,76 @@ export default {
     }
   },
 
-  /*
-  ** For deployment you might want to edit host and port
-  */
-  // server: {
-  //  port: 8000, // default: 3000
-  //  host: '0.0.0.0' // default: localhost
-  // },
+  render: {
+    resourceHints: false
+  },
 
   /*
   ** Build configuration
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    optimizeCss: false,
+    filenames: {
+      app: ({ isDev }) => isDev ? '[name].js' : 'js/[contenthash].js',
+      chunk: ({ isDev }) => isDev ? '[name].js' : 'js/[contenthash].js',
+      css: ({ isDev }) => isDev ? '[name].css' : 'css/[contenthash].css',
+      img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[contenthash:7].[ext]',
+      font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[contenthash:7].[ext]',
+      video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[contenthash:7].[ext]'
+    },
+    ...(!isDev && {
+      html: {
+        minify: {
+          collapseBooleanAttributes: true,
+          decodeEntities: true,
+          minifyCSS: true,
+          minifyJS: true,
+          processConditionalComments: true,
+          removeEmptyAttributes: true,
+          removeRedundantAttributes: true,
+          trimCustomFragments: true,
+          useShortDoctype: true
+        }
+      }
+    }),
+    splitChunks: {
+      layouts: true,
+      pages: true,
+      commons: true
+    },
+    optimization: {
+      minimize: !isDev
+    },
+    ...(!isDev && {
+      extractCSS: {
+        ignoreOrder: true
+      }
+    }),
+    transpile: ['vue-lazy-hydration', 'intersection-observer'],
+    postcss: {
+      plugins: {
+        ...(!isDev && {
+          cssnano: {
+            preset: ['advanced', {
+              autoprefixer: false,
+              cssDeclarationSorter: false,
+              zindex: false,
+              discardComments: {
+                removeAll: true
+              }
+            }]
+          }
+        })
+      },
+      ...(!isDev && {
+        preset: {
+          browsers: 'cover 99.5%',
+          autoprefixer: true
+        }
+      }),
+
+      order: 'cssnanoLast'
+    }
   }
 }
