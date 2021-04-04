@@ -1,77 +1,82 @@
 const { Router } = require('express')
 const router = Router()
 
+const { body, check, validationResult } = require('express-validator')
+
 const bcrypt = require('bcrypt')
-const { DBError } = require('../../utils')
-const { findOne, addOrUpdate } = require('../../utils/db')
+const db = require('../db')
 
-router.post('/signin', (req, res) => {
-  if (!(req.body.username && req.body.password)) return
-
-  findOne('users', { username: req.body.username }).then(user => {
-    if (!user) {
-      res.json({ status: 'error', error: 'Такого пользователя не существует' })
-      return
+router.post('/signin',
+  body('username').custom(async value => {
+    const user = await db.findOne('users', { username: value })
+    if (!user) return Promise.reject(new Error('Такого пользователя не существует'))
+  }),
+  check('password', 'Требуется пароль').not().isEmpty(),
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      const error = errors.array()[0] ?? false
+      return res.status(400).json({ status: 'error', error })
     }
 
+    const user = await db.findOne('users', { username: req.body.username })
     if (!bcrypt.compareSync(req.body.password, user.password)) {
-      res.json({ status: 'error', error: 'Неверный пароль' })
-      return
+      return res.status(400).json({ status: 'error', error: 'Неверный пароль' })
     }
 
     req.session.userid = user.id
     res.json({ status: 'success' })
-  }).catch(err => DBError(res, err))
-})
+  }
+)
 
-router.post('/signup', (req, res) => {
-  if (!(req.body.username && req.body.password && req.body.firstname && req.body.lastname)) return
-
-  findOne('users', { username: req.body.username }).then(user => {
-    if (user) {
-      res.json({ status: 'error', error: 'Имя пользователя уже занято' })
-      return
+router.post('/signup',
+  body('username').custom(async value => {
+    const user = await db.findOne('users', { username: value })
+    if (user) return Promise.reject(new Error('Имя пользователя уже занято'))
+  }),
+  check('password', 'Требуется пароль').not().isEmpty(),
+  check('firstname', 'Требуется имя').not().isEmpty(),
+  check('lastname', 'Требуется фамилия').not().isEmpty(),
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      const error = errors.array()[0] ?? false
+      return res.status(400).json({ status: 'error', error })
     }
 
     const password = bcrypt.hashSync(req.body.password, 10)
-    addOrUpdate('users', {
+    await db.insert('users', {
       username: req.body.username,
       password: password,
       firstname: req.body.firstname,
       lastname: req.body.lastname,
-      phone: req.body.phone,
-      address: req.body.address
-    }).then(userId => {
-      req.session.userid = userId
-      addOrUpdate('shopping_carts', { user_id: userId }).then(() => {
-        res.json({ status: 'success' })
-      }).catch(err => DBError(res, err))
-    }).catch(err => DBError(res, err))
-  }).catch(err => DBError(res, err))
-})
+      phone: req.body.phone ?? '',
+      address: req.body.address ?? ''
+    }).then(async (userId) => {
+      await db.insert('shopping_carts', { user_id: userId })
+      res.json({ status: 'success' })
+    })
+  }
+)
 
 router.get('/signout', (req, res) => {
-  if (req.session.userid) {
-    delete req.session.userid
-  }
+  if (req.session.userid) delete req.session.userid
   res.redirect('/')
 })
 
-router.get('/profile', (req, res) => {
-  if (!req.session.userid) {
-    res.json({ status: 'error', error: 'Вы не вошли в профиль' })
-    return
+router.get('/profile', ensureAuthenticated, async (req, res) => {
+  const user = await db.findOne('users', { id: req.session.userid })
+  if (!user) {
+    return res.status(400).json({ status: 'error', error: 'Пользователь не найден' })
   }
 
-  findOne('users', { id: req.session.userid }).then(user => {
-    if (!user) {
-      res.json({ status: 'error', error: 'Пользователь не найден' })
-      return
-    }
-
-    delete user.password
-    res.json({ status: 'success', data: user })
-  }).catch(err => DBError(res, err))
+  delete user.password
+  res.json({ status: 'success', data: user })
 })
+
+function ensureAuthenticated(req, res, next) {
+  if (req.session.userid) return next()
+  res.redirect('/')
+}
 
 module.exports = router
