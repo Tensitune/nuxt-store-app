@@ -5,23 +5,27 @@
   "author": "Danon",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate",
-    "lint": "yarn lint:js",
-    "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore ."
+    "analyze": "cross-env NODE_ENV=production nuxt build --analyze",
+    "build": "cross-env NODE_ENV=production nuxt build",
+    "dev": "cross-env NODE_ENV=development NUXT_PORT=3000 nuxt",
+    "start": "cross-env NODE_ENV=production nuxt start"
   },
   "dependencies": {
     "@nuxt/http": "latest",
     "@nuxtjs/axios": "^5.12.5",
     "bcrypt": "^5.0.1",
+    "cross-env": "^7.0.3",
+    "cssnano": "^4.1.10",
+    "cssnano-preset-advanced": "^4.0.7",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "express-validator": "^6.10.0",
+    "intersection-observer": "^0.12.0",
     "jquery": "^3.5.1",
-    "mysql": "^2.18.1",
-    "nuxt": "latest"
+    "mysql2": "^2.2.5",
+    "nuxt": "latest",
+    "vue-lazy-hydration": "*"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^5.0.0",
