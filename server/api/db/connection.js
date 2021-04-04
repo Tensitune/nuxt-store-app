@@ -2,6 +2,7 @@ const fs = require('fs')
 const mysql = require('mysql')
 
 const pool = mysql.createPool({
+  multipleStatements: true,
   connectionLimit: 10,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -18,22 +19,11 @@ pool.on('error', err => {
   console.error(err)
 })
 
-const schemaQueries = fs.readFileSync('database/migrations/schema.sql', 'utf8')
-  .replace(/(\r\n|\n|\r)/gm, ' ') // удаление новых строк
-  .replace(/\s+/g, ' ') // избыточное пустое пространство
-  .split(';') // разделение на все операторы
-  .map(Function.prototype.call, String.prototype.trim)
-  .filter(function(el) { return el.length !== 0 })
-
-async function Init() {
-  for (const query of schemaQueries) {
-    await new Promise((resolve, reject) => {
-      pool.query(query, err => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
-  }
+function Init() {
+  const schemaQueries = fs.readFileSync('database/migrations/schema.sql', 'utf8')
+  pool.query(schemaQueries, err => {
+    if (err) throw err
+  })
 }
 
 function getRows(table) {
