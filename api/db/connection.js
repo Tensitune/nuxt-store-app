@@ -1,87 +1,50 @@
-const fs = require('fs')
-const mysql = require('mysql')
+const mysql2 = require('mysql2')
 
-const pool = mysql.createPool({
-  multipleStatements: true,
-  connectionLimit: 10,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME
+class DBConnection {
+  constructor() {
+    this.db = mysql2.createPool({
+      multipleStatements: true,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME
+    })
+
+    this.checkConnection()
+  }
+
+  checkConnection() {
+    this.db.getConnection((err, conn) => {
+      if (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') console.error('Соединение с базой данных было закрыто.')
+        if (err.code === 'ER_CON_COUNT_ERROR') console.error('База данных имеет слишком много соединений.')
+        if (err.code === 'ECONNREFUSED') console.error('Отказано в подключении к базе данных.')
+        if (conn) conn.release()
+      }
+    })
+  }
+
+  query = async (sql, values) => {
+    return await new Promise((resolve, reject) => {
+      const callback = (err, result) => {
+        if (err) return reject(err)
+        resolve(result)
+      }
+
+      this.db.execute(sql, values, callback)
+    }).catch(err => {
+      const mysqlErrorList = Object.keys(HttpStatusCodes)
+      err.status = mysqlErrorList.includes(err.code) ? HttpStatusCodes[err.code] : err.status
+
+      throw err
+    })
+  }
+}
+
+const HttpStatusCodes = Object.freeze({
+  ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: 422,
+  ER_DUP_ENTRY: 409
 })
 
-pool.on('connection', conn => {
-  console.log('Успешное создание пула соединений MySQL!')
-})
-
-pool.on('error', err => {
-  console.error(err)
-})
-
-function Init() {
-  const schemaQueries = fs.readFileSync('database/migrations/schema.sql', 'utf8')
-  pool.query(schemaQueries, err => {
-    if (err) throw err
-  })
-}
-
-function getRows(table) {
-  return new Promise((resolve, reject) => {
-    pool.query(`SELECT * FROM ${table}`, (err, results) => {
-      if (err) return reject(err)
-      resolve(results)
-    })
-  })
-}
-
-function find(table, data) {
-  return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM ${table} WHERE ?`
-    pool.query(query, data, (err, results) => {
-      if (err) return reject(err)
-      if (!results[0]) return resolve(false)
-      resolve(results)
-    })
-  })
-}
-
-function findOne(table, data) {
-  return new Promise(resolve => {
-    find(table, data).then(results => {
-      if (!results) return resolve(false)
-      resolve(results[0])
-    })
-  })
-}
-
-function addOrUpdate(table, data) {
-  return new Promise((resolve, reject) => {
-    const query = `INSERT INTO ${table} SET ? ON DUPLICATE KEY UPDATE ?`
-
-    pool.query(query, [data, data], (err, results) => {
-      if (err) return reject(err)
-      resolve(results.insertId)
-    })
-  })
-}
-
-function deleteRows(table, data) {
-  return new Promise((resolve, reject) => {
-    const query = `DELETE FROM ${table} WHERE ?`
-
-    pool.query(query, data, (err, results) => {
-      if (err) return reject(err)
-      resolve(results.insertId)
-    })
-  })
-}
-
-module.exports = {
-  Init: Init,
-  getRows: getRows,
-  find: find,
-  findOne: findOne,
-  addOrUpdate: addOrUpdate,
-  delete: deleteRows
-}
+module.exports = new DBConnection().query
