@@ -134,14 +134,14 @@ export default {
     }
   },
   mounted() {
-    this.$axios.$get('/profile').then(res => {
+    this.$axios.$get('/auth/profile').then(res => {
       if (res.status === 'error') return
       this.$store.commit('user/set', res.data)
     })
   },
   methods: {
     signOut() {
-      this.$axios.get('/signout').then(() => {
+      this.$axios.get('/auth/signout').then(() => {
         window.location.reload()
       })
     }

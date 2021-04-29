@@ -95,7 +95,7 @@ export default {
         return
       }
 
-      this.$axios.post('/signup', this.signupData).then(res => {
+      this.$axios.post('/auth/signup', this.signupData).then(res => {
         this.error = ''
         this.loading = false
 
