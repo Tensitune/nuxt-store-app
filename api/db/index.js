@@ -27,11 +27,18 @@ class DB {
     return result[0]
   }
 
-  getPagedRows = async (table, page = 1, perPage = 20) => {
+  getPagedRows = async (table, page = 1, perPage = 20, params = {}) => {
     page = typeof page === 'number' ? page : 1
     perPage = typeof perPage === 'number' ? perPage : 20
 
-    const sql = `SELECT * FROM ${table} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+    let sql = `SELECT * FROM ${table} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+
+    if (Object.keys(params).length) {
+      const { columnSet, values } = multipleColumnSet(params)
+      sql = `SELECT * FROM ${table} WHERE ${columnSet} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+      return await query(sql, [...values])
+    }
+
     return await query(sql)
   }
 
