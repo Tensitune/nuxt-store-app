@@ -13,7 +13,11 @@ app.use(session({
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-app.use(require('./routes/auth'))
+app.use('/auth', require('./routes/auth'))
+app.use('/categories', require('./routes/categories'))
+app.use('/products', require('./routes/products'))
+app.use('/reviews', require('./routes/reviews'))
+app.use('/cart', require('./routes/cart'))
 
 module.exports = app
 if (require.main === module) {
