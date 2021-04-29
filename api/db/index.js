@@ -2,8 +2,16 @@ const { multipleColumnSet } = require('../utils')
 const query = require('./connection')
 
 class DB {
-  count = async table => {
-    return await query(`SELECT COUNT(id) as count FROM ${table} USE INDEX (PRIMARY)`)
+  count = async (table, params = {}) => {
+    let sql = `SELECT COUNT(id) as count FROM ${table} USE INDEX (PRIMARY)`
+
+    if (Object.keys(params).length) {
+      const { columnSet, values } = multipleColumnSet(params)
+      sql = `SELECT COUNT(id) as count FROM ${table} WHERE ${columnSet}`
+      return await query(sql, [...values])
+    }
+
+    return await query(sql)
   }
 
   find = async (table, params = {}) => {
