@@ -8,7 +8,9 @@ class DB {
     if (Object.keys(params).length) {
       const { columnSet, values } = multipleColumnSet(params)
       sql = `SELECT COUNT(id) as count FROM ${table} WHERE ${columnSet}`
-      return await query(sql, [...values])
+
+      const result = await query(sql, [...values])
+      return result[0].count
     }
 
     return await query(sql)
