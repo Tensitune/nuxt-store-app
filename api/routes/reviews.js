@@ -8,7 +8,7 @@ const { UserMiddleware } = require('../middleware')
 const db = require('../db')
 
 router.get('/:productId', async (req, res) => {
-  const params = { cat_id: req.params.productId }
+  const params = { product_id: req.params.productId }
 
   let reviews
   if (req.query.page) {
