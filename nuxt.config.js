@@ -111,6 +111,9 @@ export default {
   */
   build: {
     optimizeCss: false,
+    babel: {
+      plugins: [['@babel/plugin-proposal-private-methods', { loose: true }]]
+    },
     filenames: {
       app: ({ isDev }) => isDev ? '[name].js' : 'js/[contenthash].js',
       chunk: ({ isDev }) => isDev ? '[name].js' : 'js/[contenthash].js',
