@@ -22,11 +22,12 @@ CREATE TABLE IF NOT EXISTS `products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cat_id` int(11) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `description` varchar(1000) DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `published_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `price` int(11) DEFAULT 0,
   `stock` int(11) DEFAULT 0,
   `thumbnail_uri` varchar(255) DEFAULT NULL,
+  `recommended` boolean DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `FK_products_categories` (`cat_id`),
   CONSTRAINT `FK_products_categories` FOREIGN KEY (`cat_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
