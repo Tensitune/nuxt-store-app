@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `rating` float(11, 2) DEFAULT NULL,
+  `rating` float(2, 1) DEFAULT NULL,
   `text` text DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `FK_product_reviews` (`product_id`),
