@@ -14,8 +14,8 @@ router.get('/', async (req, res) => {
   res.json({ status: 'success', data: products })
 })
 
-router.get('/:categoryId', async (req, res) => {
-  const products = await getPagedRows('products', { cat_id: req.params.categoryId }, req.query)
+router.get('/:productId', async (req, res) => {
+  const products = await db.findOne('products', { cat_id: req.params.productId })
   res.json({ status: 'success', data: products })
 })
 
@@ -29,7 +29,7 @@ router.post('/',
   check('description').notEmpty(),
   check('price').notEmpty(),
   check('stock').notEmpty(),
-  check('thumbnail_uri').notEmpty(),
+  check('thumbnail').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
     if (error) return res.status(400).json({ status: 'error', error })
@@ -40,7 +40,7 @@ router.post('/',
       description: req.body.description,
       price: req.body.price,
       stock: req.body.stock,
-      thumbnail_uri: req.body.thumbnail_uri
+      thumbnail_uri: req.body.thumbnail
     })
 
     res.json({ status: 'success' })
@@ -70,7 +70,7 @@ router.put('/',
     if (req.body.description) data.description = req.body.description
     if (req.body.price) data.price = req.body.price
     if (req.body.stock) data.stock = req.body.stock
-    if (req.body.thumbnail_uri) data.thumbnail_uri = req.body.thumbnail_uri
+    if (req.body.thumbnail) data.thumbnail = req.body.thumbnail
 
     await db.update('products', req.body.id, data)
     res.json({ status: 'success' })
