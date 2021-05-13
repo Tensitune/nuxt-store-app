@@ -7,9 +7,16 @@ const { validationResult } = require('../utils')
 const { AdminMiddleware } = require('../middleware')
 const db = require('../db')
 
+const getPagedRows = require('../utils/getPagedRows')
+
 router.get('/', async (req, res) => {
   const categories = await db.find('categories')
   res.json({ status: 'success', data: categories })
+})
+
+router.get('/:categoryId', async (req, res) => {
+  const products = await getPagedRows('products', { cat_id: req.params.categoryId }, req.query)
+  res.json({ status: 'success', data: products })
 })
 
 router.post('/',
