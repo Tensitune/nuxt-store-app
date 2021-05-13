@@ -12,7 +12,7 @@ router.get('/', UserMiddleware, async (req, res) => {
   if (!cartId) await db.insert('shopping_carts', { user_id: req.session.userid }).then(id => (cartId = id))
 
   const cartItems = await db.find('cart_items', { cart_id: cartId })
-  res.json({ status: 'success', cartId, data: cartItems })
+  res.json({ status: 'success', data: cartItems })
 })
 
 router.post('/',
