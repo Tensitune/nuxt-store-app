@@ -1,14 +1,22 @@
 <template>
   <div>
-    <v-parallax dark height="500" src="/img/parallax/material.jpg">
+    <v-parallax height="500" src="/img/parallax/material.jpg">
       <v-container>
-        <v-carousel cycle height="415" hide-delimiters show-arrows-on-hover>
-          <v-carousel-item v-for="(slide, i) in [1, 2, 3, 4, 5]" :key="i">
-            <v-sheet color="indigo" height="100%">
-              <v-row class="fill-height" align="center" justify="center">
-                <div class="display-3">Товар {{ slide }}</div>
-              </v-row>
-            </v-sheet>
+        <v-carousel cycle hide-delimiter-background>
+          <v-carousel-item v-for="product of recommendedProducts" :key="product.id">
+            <v-row align="center" justify="center">
+              <v-col cols="auto">
+                <CardProduct
+                  :id="product.id"
+                  :title="product.title"
+                  :description="product.description"
+                  :image="product.thumbnail"
+                  :price="product.price"
+                  :stock="product.stock"
+                  max-width="90%"
+                />
+              </v-col>
+            </v-row>
           </v-carousel-item>
         </v-carousel>
       </v-container>
@@ -16,22 +24,23 @@
 
     <v-container>
       <div class="text-center">
-        <h1>Рекомендуемые товары</h1>
-        <v-btn text plain small router to="/catalog/recommended">Все рекомендации</v-btn>
+        <h1>Популярные товары</h1>
+        <v-btn text plain small router to="/catalog">Все товары</v-btn>
       </div>
 
-      <v-row>
-        <v-col cols="6" md="4">
+      <v-row v-if="recommendedProducts" justify="center" align="center">
+        <v-col v-for="product of recommendedProducts" :key="product.id" cols="auto">
           <CardProduct
-            title="Продукт"
-            description="Lorem, ipsum dolor sit amet consectetur adipisicing elit. Soluta iste necessitatibus deserunt dolor eligendi eos quod odio, eius repudiandae fuga voluptas, odit repellat ad minus numquam dolorum optio libero! Modi."
-            image="/img/parallax/material.jpg"
-            price="1000"
-            :stock="5"
-            :reviews="[{ rating: 5 }, { rating: 3 }]"
+            :id="product.id"
+            :title="product.title"
+            :description="product.description"
+            :image="product.thumbnail"
+            :price="product.price"
+            :stock="product.stock"
           />
         </v-col>
       </v-row>
+      <div v-else>Товары не найдены</div>
 
       <v-spacer />
     </v-container>
@@ -40,6 +49,9 @@
 
 <script>
 export default {
-
+  async asyncData({ $axios }) {
+    const recommendedProducts = (await $axios.$get('/products?page=1&perPage=9')).data ?? []
+    return { recommendedProducts }
+  }
 }
 </script>
