@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   res.json({ status: 'success', data: categories })
 })
 
-router.post('/add',
+router.post('/',
   AdminMiddleware,
   check('title').notEmpty(),
   check('icon').notEmpty(),
@@ -29,7 +29,7 @@ router.post('/add',
   }
 )
 
-router.post('/edit',
+router.put('/',
   AdminMiddleware,
   check('id').custom(async value => {
     const category = await db.findOne('categories', { id: value })
@@ -50,7 +50,7 @@ router.post('/edit',
   }
 )
 
-router.post('/delete',
+router.delete('/',
   AdminMiddleware,
   check('id').custom(async value => {
     const category = await db.findOne('categories', { id: value })

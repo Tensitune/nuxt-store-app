@@ -7,22 +7,19 @@ const { validationResult } = require('../utils')
 const { AdminMiddleware } = require('../middleware')
 const db = require('../db')
 
-router.get('/:categoryId', async (req, res) => {
-  const params = { cat_id: req.params.categoryId }
+const getPagedRows = require('../utils/getPagedRows')
 
-  let products
-  if (req.query.page) {
-    products = await db.getPagedRows('products', req.query.page, req.query.perPage, params)
-  } else if (req.query.getAll) {
-    products = await db.find('products', params)
-  } else {
-    products = await db.count('products', params)
-  }
-
+router.get('/', async (req, res) => {
+  const products = await getPagedRows('products', { recommended: true }, req.query)
   res.json({ status: 'success', data: products })
 })
 
-router.post('/add',
+router.get('/:categoryId', async (req, res) => {
+  const products = await getPagedRows('products', { cat_id: req.params.categoryId }, req.query)
+  res.json({ status: 'success', data: products })
+})
+
+router.post('/',
   AdminMiddleware,
   check('cat_id').custom(async value => {
     const category = await db.findOne('categories', { id: value })
@@ -50,7 +47,7 @@ router.post('/add',
   }
 )
 
-router.post('/edit',
+router.put('/',
   AdminMiddleware,
   check('id').custom(async value => {
     const product = await db.findOne('products', { id: value })
@@ -80,7 +77,7 @@ router.post('/edit',
   }
 )
 
-router.post('/delete',
+router.delete('/',
   AdminMiddleware,
   check('id').custom(async value => {
     const product = await db.findOne('products', { id: value })

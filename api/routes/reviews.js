@@ -7,22 +7,14 @@ const { validationResult } = require('../utils')
 const { UserMiddleware } = require('../middleware')
 const db = require('../db')
 
+const getPagedRows = require('../utils/getPagedRows')
+
 router.get('/:productId', async (req, res) => {
-  const params = { product_id: req.params.productId }
-
-  let reviews
-  if (req.query.page) {
-    reviews = await db.getPagedRows('reviews', req.query.page, req.query.perPage, params)
-  } else if (req.query.getAll) {
-    reviews = await db.find('reviews', params)
-  } else {
-    reviews = await db.count('reviews', params)
-  }
-
+  const reviews = await getPagedRows('reviews', { product_id: req.params.productId }, req.query)
   res.json({ status: 'success', data: reviews })
 })
 
-router.post('/add',
+router.post('/',
   UserMiddleware,
   check('product_id').custom(async value => {
     const product = await db.findOne('products', { id: value })
@@ -45,7 +37,7 @@ router.post('/add',
   }
 )
 
-router.post('/edit',
+router.put('/',
   UserMiddleware,
   check('id').custom(async (value, { req }) => {
     const review = await db.findOne('reviews', { id: value, user_id: req.session.userid })
@@ -66,7 +58,7 @@ router.post('/edit',
   }
 )
 
-router.post('/delete',
+router.delete('/',
   UserMiddleware,
   check('id').custom(async (value, { req }) => {
     const review = await db.findOne('reviews', { id: value, user_id: req.session.userid })
@@ -80,40 +72,5 @@ router.post('/delete',
     res.json({ status: 'success' })
   }
 )
-
-// router.post('/reviews', (req, res) => {
-//   if (!(req.session.userid && req.body.type)) return
-
-//   db.findOne('users', { id: req.session.userid }).then(user => {
-//     if (!user) return
-
-//     if (req.body.type === 'add') {
-//       if (!(req.body.product_id && req.body.user_id && req.body.rating && req.body.text)) return
-
-//       db.addOrUpdate('reviews', {
-//         product_id: req.body.product_id,
-//         user_id: req.body.user_id,
-//         rating: req.body.rating,
-//         text: req.body.text
-//       }).then(() => {
-//         res.json({ status: 'success' })
-//       }).catch(err => DBError(res, err))
-//     } else if (req.body.type === 'edit' && req.body.id) {
-//       const data = { id: req.body.id }
-//       if (req.body.product_id) data.product_id = req.body.product_id
-//       if (req.body.user_id) data.user_id = req.body.user_id
-//       if (req.body.rating) data.rating = req.body.rating
-//       if (req.body.text) data.text = req.body.text
-
-//       db.addOrUpdate('reviews', data).then(() => {
-//         res.json({ status: 'success' })
-//       }).catch(err => DBError(res, err))
-//     } else if (req.body.type === 'remove' && req.body.id) {
-//       db.delete('reviews', { id: req.body.id }).then(() => {
-//         res.json({ status: 'success' })
-//       }).catch(err => DBError(res, err))
-//     }
-//   })
-// })
 
 module.exports = router

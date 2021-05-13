@@ -15,7 +15,7 @@ router.get('/', UserMiddleware, async (req, res) => {
   res.json({ status: 'success', data: cartItems })
 })
 
-router.post('/add',
+router.post('/',
   UserMiddleware,
   check('product_id').notEmpty(),
   check('quantity').notEmpty(),
@@ -36,7 +36,7 @@ router.post('/add',
   }
 )
 
-router.post('/edit',
+router.put('/',
   UserMiddleware,
   check('product_id').notEmpty(),
   check('quantity').notEmpty(),
@@ -55,7 +55,7 @@ router.post('/edit',
   }
 )
 
-router.post('/delete',
+router.delete('/',
   UserMiddleware,
   check('product_id').notEmpty(),
   async (req, res) => {
