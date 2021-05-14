@@ -17,7 +17,13 @@ router.get('/', UserMiddleware, async (req, res) => {
 
 router.post('/',
   UserMiddleware,
-  check('product_id').notEmpty(),
+  check('product_id').notEmpty().custom(async (value, { req }) => {
+    let cartId = (await db.findOne('shopping_carts', { user_id: req.session.userid })).id
+    if (!cartId) await db.insert('shopping_carts', { user_id: req.session.userid }).then(id => (cartId = id))
+
+    const category = await db.findOne('cart_items', { cart_id: cartId, product_id: value })
+    if (category) return Promise.reject(new Error('Этот товар уже есть в вашей корзине'))
+  }),
   check('quantity').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
