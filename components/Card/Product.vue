@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="loading" class="mx-auto my-6" :max-width="maxWidth" shaped>
+  <v-card :loading="loading" class="mx-auto" :max-width="maxWidth" :max-height="maxHeight" :width="width" :height="height" elevation="4" shaped>
     <template slot="progress">
       <v-progress-linear color="deep-purple" height="10" indeterminate />
     </template>
@@ -31,13 +31,8 @@
     <v-divider class="mx-4" />
 
     <v-card-actions v-if="user">
-      <v-btn color="deep-purple lighten-2" text @click="addToShoppingCart(id)">
-        Добавить в корзину
-      </v-btn>
+      <ButtonAddToCart :product-id="id" />
     </v-card-actions>
-    <v-alert :type="alertType" :value="alert" transition="scale-transition" dismissible>
-      {{ alertText }}
-    </v-alert>
   </v-card>
 </template>
 
@@ -68,9 +63,21 @@ export default {
       type: Number,
       default: 0
     },
+    width: {
+      type: String,
+      default: 'auto'
+    },
+    height: {
+      type: String,
+      default: 'auto'
+    },
     maxWidth: {
       type: String,
-      default: '320px'
+      default: 'auto'
+    },
+    maxHeight: {
+      type: String,
+      default: 'auto'
     }
   },
   data: () => ({
@@ -97,12 +104,6 @@ export default {
   },
   async mounted() {
     this.reviews = (await this.$axios.$get(`/reviews/${this.id}?getAll=true`)).data ?? []
-  },
-  methods: {
-    addToShoppingCart(productId) {
-      this.alert = false
-      this.loading = true
-    }
   }
 }
 </script>
