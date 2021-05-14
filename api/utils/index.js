@@ -6,9 +6,34 @@ exports.multipleColumns = (object, usingCommas = true) => {
   }
 
   const keys = Object.keys(object)
-  const values = Object.values(object)
+  let values = Object.values(object)
 
-  const columns = keys.map(key => `${key} = ?`).join(`${usingCommas ? ', ' : ' AND '}`)
+  const columns = keys.map(key => {
+    if (!usingCommas && typeof object[key] === 'object') {
+      const tempKeys = Object.keys(object[key])
+      const tempValues = Object.values(object[key])
+
+      let tempColumns = ''
+      for (let i = 0; i < tempKeys.length; i++) {
+        const k = tempKeys[i]
+        const value = tempValues[i]
+
+        if (k === 'greaterThan') tempColumns += `${key} > ${value}`
+        else if (k === 'lessThan') tempColumns += `${key} < ${value}`
+        else tempColumns += `${key} = ${value}`
+
+        if (i < tempKeys.length - 1) {
+          tempColumns += ' AND '
+        }
+      }
+
+      values = values.filter(value => value !== object[key])
+      return tempColumns
+    }
+
+    return `${key} = ?`
+  }).join(`${usingCommas ? ', ' : ' AND '}`)
+
   return { columns, values }
 }
 
