@@ -13,7 +13,7 @@
         <v-container>
           <v-row>
             <v-col cols="12">
-              <v-text-field v-model="signupData.username" label="Имя пользователя*" :rules="requiredRules" required />
+              <v-text-field v-model="signupData.username" label="Имя пользователя*" counter="25" :rules="requiredRules" required />
             </v-col>
             <v-col cols="12">
               <v-text-field
@@ -30,16 +30,16 @@
               <v-text-field v-model="passwordConfirm" label="Подтвержение пароля*" :rules="requiredRules" :type="passwordVisible ? '' : 'password'" required />
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-text-field v-model="signupData.firstname" label="Имя*" :rules="requiredRules" required />
+              <v-text-field v-model="signupData.firstname" label="Имя*" counter="25" :rules="requiredRules" required />
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-text-field v-model="signupData.lastname" label="Фамилия*" :rules="requiredRules" required />
+              <v-text-field v-model="signupData.lastname" label="Фамилия*" counter="25" :rules="requiredRules" required />
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="signupData.phone" label="Телефон" />
+              <v-text-field v-model="signupData.phone" label="Телефон" counter="16" />
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="signupData.address" label="Адрес" />
+              <v-text-field v-model="signupData.address" label="Адрес" counter="255" />
             </v-col>
           </v-row>
         </v-container>
@@ -82,18 +82,6 @@ export default {
   methods: {
     signUp() {
       this.loading = true
-
-      if (!(this.signupData.username && this.signupData.password && this.signupData.firstname && this.signupData.lastname)) {
-        this.error = 'Заполните обязательные поля'
-        this.loading = false
-        return
-      }
-
-      if (this.signupData.password !== this.passwordConfirm) {
-        this.error = 'Пароли не совпадают'
-        this.loading = false
-        return
-      }
 
       this.$axios.post('/auth/signup', this.signupData).then(res => {
         this.error = ''

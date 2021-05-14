@@ -55,19 +55,18 @@ export default {
   }),
   methods: {
     signIn() {
-      if (!(this.signinData.username && this.signinData.password)) {
-        this.error = 'Заполните все поля'
-        return
-      }
-
       this.$axios.post('/auth/signin', this.signinData).then(res => {
         if (res.data.status === 'error') {
           this.error = res.data.error
+          console.log(this.error)
           return
         }
 
         window.location.reload()
-      }).catch(err => console.log(err))
+      }).catch(err => {
+        console.log(err)
+        this.error = 'Что-то пошло не так'
+      })
     }
   }
 }
