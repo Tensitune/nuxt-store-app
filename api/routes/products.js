@@ -29,7 +29,6 @@ router.post('/',
   check('description').notEmpty(),
   check('price').notEmpty(),
   check('stock').notEmpty(),
-  check('thumbnail').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
@@ -39,8 +38,7 @@ router.post('/',
       title: req.body.title,
       description: req.body.description,
       price: req.body.price,
-      stock: req.body.stock,
-      thumbnail: req.body.thumbnail
+      stock: req.body.stock
     })
 
     res.json({ status: 'success' })
