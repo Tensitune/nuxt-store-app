@@ -21,7 +21,7 @@ router.get('/:productId', async (req, res) => {
 
 router.post('/',
   AdminMiddleware,
-  check('cat_id').custom(async value => {
+  check('cat_id').notEmpty().custom(async value => {
     const category = await db.findOne('categories', { id: value })
     if (!category) return Promise.reject(new Error('Такой категории не существует'))
   }),
@@ -47,7 +47,7 @@ router.post('/',
 
 router.put('/',
   AdminMiddleware,
-  check('id').custom(async value => {
+  check('id').notEmpty().custom(async value => {
     const product = await db.findOne('products', { id: value })
     if (!product) return Promise.reject(new Error('Такого товара не существует'))
   }),
@@ -77,7 +77,7 @@ router.put('/',
 
 router.delete('/',
   AdminMiddleware,
-  check('id').custom(async value => {
+  check('id').notEmpty().custom(async value => {
     const product = await db.findOne('products', { id: value })
     if (!product) return Promise.reject(new Error('Такого товара не существует'))
   }),

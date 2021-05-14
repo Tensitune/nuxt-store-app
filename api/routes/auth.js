@@ -10,7 +10,7 @@ const { UserMiddleware } = require('../middleware')
 const db = require('../db')
 
 router.post('/signin',
-  check('username').custom(async value => {
+  check('username').notEmpty().custom(async value => {
     const user = await db.findOne('users', { username: value })
     if (!user) return Promise.reject(new Error('Такого пользователя не существует'))
   }),
@@ -30,7 +30,7 @@ router.post('/signin',
 )
 
 router.post('/signup',
-  check('username').custom(async value => {
+  check('username').notEmpty().custom(async value => {
     const user = await db.findOne('users', { username: value })
     if (user) return Promise.reject(new Error('Имя пользователя уже занято'))
   }),

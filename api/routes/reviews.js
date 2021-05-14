@@ -16,7 +16,7 @@ router.get('/:productId', async (req, res) => {
 
 router.post('/',
   UserMiddleware,
-  check('product_id').custom(async value => {
+  check('product_id').notEmpty().custom(async value => {
     const product = await db.findOne('products', { id: value })
     if (!product) return Promise.reject(new Error('Такого товара не существует'))
   }),
@@ -39,7 +39,7 @@ router.post('/',
 
 router.put('/',
   UserMiddleware,
-  check('id').custom(async (value, { req }) => {
+  check('id').notEmpty().custom(async (value, { req }) => {
     const review = await db.findOne('reviews', { id: value, user_id: req.session.userid })
     if (!review) return Promise.reject(new Error('Такого отзыва не существует'))
   }),
@@ -60,7 +60,7 @@ router.put('/',
 
 router.delete('/',
   UserMiddleware,
-  check('id').custom(async (value, { req }) => {
+  check('id').notEmpty().custom(async (value, { req }) => {
     const review = await db.findOne('reviews', { id: value, user_id: req.session.userid })
     if (!review) return Promise.reject(new Error('Такого отзыва не существует'))
   }),

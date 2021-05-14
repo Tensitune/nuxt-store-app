@@ -38,7 +38,7 @@ router.post('/',
 
 router.put('/',
   AdminMiddleware,
-  check('id').custom(async value => {
+  check('id').notEmpty().custom(async value => {
     const category = await db.findOne('categories', { id: value })
     if (!category) return Promise.reject(new Error('Такой категории не существует'))
   }),
@@ -59,7 +59,7 @@ router.put('/',
 
 router.delete('/',
   AdminMiddleware,
-  check('id').custom(async value => {
+  check('id').notEmpty().custom(async value => {
     const category = await db.findOne('categories', { id: value })
     if (!category) return Promise.reject(new Error('Такой категории не существует'))
   }),
