@@ -15,7 +15,15 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:categoryId', async (req, res) => {
-  const products = await getPagedRows('products', { cat_id: req.params.categoryId }, req.query)
+  const params = { cat_id: req.params.categoryId }
+
+  if (req.query.priceFrom || req.query.priceTo) {
+    params.price = {}
+    if (req.query.priceFrom) params.price.greaterThan = req.query.priceFrom
+    if (req.query.priceTo) params.price.lessThan = req.query.priceTo
+  }
+
+  const products = await getPagedRows('products', params, req.query)
   res.json({ status: 'success', data: products })
 })
 
