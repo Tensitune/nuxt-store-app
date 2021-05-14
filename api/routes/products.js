@@ -40,7 +40,7 @@ router.post('/',
       description: req.body.description,
       price: req.body.price,
       stock: req.body.stock,
-      thumbnail_uri: req.body.thumbnail
+      thumbnail: req.body.thumbnail
     })
 
     res.json({ status: 'success' })
