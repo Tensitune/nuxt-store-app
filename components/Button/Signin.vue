@@ -58,7 +58,6 @@ export default {
       this.$axios.post('/auth/signin', this.signinData).then(res => {
         if (res.data.status === 'error') {
           this.error = res.data.error
-          console.log(this.error)
           return
         }
 
