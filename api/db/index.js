@@ -1,4 +1,4 @@
-const { multipleColumnSet } = require('../utils')
+const { multipleColumns } = require('../utils')
 const query = require('./connection')
 
 class DB {
@@ -6,8 +6,8 @@ class DB {
     let sql = `SELECT COUNT(id) as count FROM ${table} USE INDEX (PRIMARY)`
 
     if (Object.keys(params).length) {
-      const { columnSet, values } = multipleColumnSet(params)
-      sql = `SELECT COUNT(id) as count FROM ${table} WHERE ${columnSet}`
+      const { columns, values } = multipleColumns(params, false)
+      sql = `SELECT COUNT(id) as count FROM ${table} WHERE ${columns}`
 
       const result = await query(sql, [...values])
       return result[0].count
@@ -23,15 +23,15 @@ class DB {
       return await query(sql)
     }
 
-    const { columnSet, values } = multipleColumnSet(params)
-    sql += ` WHERE ${columnSet}`
+    const { columns, values } = multipleColumns(params, false)
+    sql += ` WHERE ${columns}`
 
     return await query(sql, [...values])
   }
 
   findOne = async (table, params) => {
-    const { columnSet, values } = multipleColumnSet(params)
-    const sql = `SELECT * FROM ${table} WHERE ${columnSet}`
+    const { columns, values } = multipleColumns(params, false)
+    const sql = `SELECT * FROM ${table} WHERE ${columns}`
     const result = await query(sql, [...values])
 
     return result[0]
@@ -41,8 +41,8 @@ class DB {
     let sql = `SELECT * FROM ${table} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
 
     if (Object.keys(params).length) {
-      const { columnSet, values } = multipleColumnSet(params)
-      sql = `SELECT * FROM ${table} WHERE ${columnSet} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+      const { columns, values } = multipleColumns(params, false)
+      sql = `SELECT * FROM ${table} WHERE ${columns} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
       return await query(sql, [...values])
     }
 
@@ -50,8 +50,8 @@ class DB {
   }
 
   insert = async (table, params) => {
-    const { columnSet, values } = multipleColumnSet(params)
-    const sql = `INSERT INTO ${table} SET ${columnSet}`
+    const { columns, values } = multipleColumns(params)
+    const sql = `INSERT INTO ${table} SET ${columns}`
     const result = await query(sql, [...values])
     const insertId = result ? result.insertId : false
 
@@ -59,8 +59,8 @@ class DB {
   }
 
   update = async (table, id, params) => {
-    const { columnSet, values } = multipleColumnSet(params)
-    const sql = `UPDATE ${table} SET ${columnSet} WHERE id = ?`
+    const { columns, values } = multipleColumns(params)
+    const sql = `UPDATE ${table} SET ${columns} WHERE id = ?`
     const result = await query(sql, [...values, id])
 
     return result
