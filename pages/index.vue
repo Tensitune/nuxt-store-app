@@ -4,7 +4,7 @@
       <v-container>
         <v-carousel cycle hide-delimiter-background>
           <v-carousel-item v-for="product of recommendedProducts" :key="product.id">
-            <v-row align="center" justify="center">
+            <v-row class="my-6" align="center" justify="center">
               <v-col cols="auto">
                 <CardProduct
                   :id="product.id"
@@ -28,7 +28,7 @@
         <v-btn text plain small router to="/catalog">Все товары</v-btn>
       </div>
 
-      <v-row v-if="recommendedProducts" justify="center" align="center">
+      <v-row v-if="recommendedProducts" class="my-3" justify="center" align="center">
         <v-col v-for="product of recommendedProducts" :key="product.id" cols="auto">
           <CardProduct
             :id="product.id"
@@ -37,6 +37,7 @@
             :image="product.thumbnail"
             :price="product.price"
             :stock="product.stock"
+            max-width="360px"
           />
         </v-col>
       </v-row>
