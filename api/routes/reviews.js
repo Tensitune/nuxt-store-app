@@ -24,7 +24,7 @@ router.post('/',
   check('text').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.insert('categories', {
       product_id: req.body.product_id,
@@ -47,7 +47,7 @@ router.put('/',
   check('text').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.update('reviews', req.body.id, {
       rating: req.body.rating,
@@ -66,7 +66,7 @@ router.delete('/',
   }),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.delete('reviews', req.body.id)
     res.json({ status: 'success' })

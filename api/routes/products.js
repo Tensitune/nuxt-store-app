@@ -32,7 +32,7 @@ router.post('/',
   check('thumbnail').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.insert('products', {
       cat_id: req.body.cat_id,
@@ -55,13 +55,13 @@ router.put('/',
   }),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     const data = {}
 
     if (req.body.cat_id) {
       const category = await db.findOne('categories', { id: req.body.cat_id })
-      if (!category) return res.status(400).json({ status: 'error', error: 'Такой категории не существует' })
+      if (!category) return res.json({ status: 'error', error: 'Такой категории не существует' })
 
       data.cat_id = req.body.cat_id
     }
@@ -85,7 +85,7 @@ router.delete('/',
   }),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.delete('products', req.body.id)
     res.json({ status: 'success' })

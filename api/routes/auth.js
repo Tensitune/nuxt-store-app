@@ -17,11 +17,11 @@ router.post('/signin',
   check('password', 'Требуется пароль').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     const user = await db.findOne('users', { username: req.body.username })
     if (!bcrypt.compareSync(req.body.password, user.password)) {
-      return res.status(400).json({ status: 'error', error: 'Неверный пароль' })
+      return res.json({ status: 'error', error: 'Неверный пароль' })
     }
 
     req.session.userid = user.id
@@ -39,7 +39,7 @@ router.post('/signup',
   check('lastname', 'Требуется фамилия').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     const password = bcrypt.hashSync(req.body.password, 10)
     await db.insert('users', {
@@ -64,7 +64,7 @@ router.get('/signout', (req, res) => {
 router.get('/profile', UserMiddleware, async (req, res) => {
   const user = await db.findOne('users', { id: req.session.userid })
   if (!user) {
-    return res.status(400).json({ status: 'error', error: 'Пользователь не найден' })
+    return res.json({ status: 'error', error: 'Пользователь не найден' })
   }
 
   delete user.password

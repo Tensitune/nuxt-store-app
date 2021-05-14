@@ -25,7 +25,7 @@ router.post('/',
   check('icon').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.insert('categories', {
       title: req.body.title,
@@ -46,7 +46,7 @@ router.put('/',
   check('icon').notEmpty(),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.update('categories', req.body.id, {
       title: req.body.title,
@@ -65,7 +65,7 @@ router.delete('/',
   }),
   async (req, res) => {
     const error = validationResult(req)
-    if (error) return res.status(400).json({ status: 'error', error })
+    if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.delete('categories', req.body.id)
     res.json({ status: 'success' })
