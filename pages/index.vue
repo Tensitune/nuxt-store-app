@@ -28,8 +28,8 @@
         <v-btn text plain small router to="/catalog">Все товары</v-btn>
       </div>
 
-      <v-row v-if="recommendedProducts" class="my-3" justify="center" align="center">
-        <v-col v-for="product of recommendedProducts" :key="product.id" cols="auto">
+      <v-row v-if="popularProducts" class="my-3" justify="center" align="center">
+        <v-col v-for="product of popularProducts" :key="product.id" cols="auto">
           <CardProduct
             :id="product.id"
             :title="product.title"
@@ -52,7 +52,8 @@
 export default {
   async asyncData({ $axios }) {
     const recommendedProducts = (await $axios.$get('/products?page=1&perPage=9')).data ?? []
-    return { recommendedProducts }
+    const popularProducts = (await $axios.$get('/products/popular')).data ?? []
+    return { recommendedProducts, popularProducts }
   }
 }
 </script>
