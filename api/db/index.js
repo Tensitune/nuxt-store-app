@@ -16,33 +16,44 @@ class DB {
     return await query(sql)
   }
 
-  find = async (table, params = {}) => {
+  find = async (table, params = {}, order = {}) => {
     let sql = `SELECT * FROM ${table}`
 
     if (!Object.keys(params).length) {
+      if (order.by) sql += ` ORDER BY ${order.by} ${order.desc ? ' DESC' : ' ASC'}`
       return await query(sql)
     }
 
     const { columns, values } = multipleColumns(params, false)
+
     sql += ` WHERE ${columns}`
+    if (order.by) sql += ` ORDER BY ${order.by} ${order.desc ? ' DESC' : ' ASC'}`
 
     return await query(sql, [...values])
   }
 
-  findOne = async (table, params) => {
+  findOne = async (table, params, order = {}) => {
     const { columns, values } = multipleColumns(params, false)
-    const sql = `SELECT * FROM ${table} WHERE ${columns}`
-    const result = await query(sql, [...values])
 
+    let sql = `SELECT * FROM ${table} WHERE ${columns}`
+    if (order.by) sql += ` ORDER BY ${order.by} ${order.desc ? ' DESC' : ' ASC'}`
+
+    const result = await query(sql, [...values])
     return result[0]
   }
 
-  getPagedRows = async (table, page = 1, perPage = 20, params = {}) => {
-    let sql = `SELECT * FROM ${table} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+  getPagedRows = async (table, page = 1, perPage = 20, params = {}, order = {}) => {
+    let sql = `SELECT * FROM ${table}`
+    if (order.by) sql += ` ORDER BY ${order.by} ${order.desc ? ' DESC' : ' ASC'}`
+    sql += ` LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
 
     if (Object.keys(params).length) {
       const { columns, values } = multipleColumns(params, false)
-      sql = `SELECT * FROM ${table} WHERE ${columns} LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+
+      sql = `SELECT * FROM ${table} WHERE ${columns}`
+      if (order.by) sql += ` ORDER BY ${order.by} ${order.desc ? ' DESC' : ' ASC'}`
+      sql += ` LIMIT ${perPage} OFFSET ${(page - 1) * perPage}`
+
       return await query(sql, [...values])
     }
 
