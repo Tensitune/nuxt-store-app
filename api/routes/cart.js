@@ -11,7 +11,13 @@ router.get('/', UserMiddleware, async (req, res) => {
   let cartId = (await db.findOne('shopping_carts', { user_id: req.session.userid })).id
   if (!cartId) await db.insert('shopping_carts', { user_id: req.session.userid }).then(id => (cartId = id))
 
-  const cartItems = await db.find('cart_items', { cart_id: cartId })
+  let cartItems = []
+  if (req.query.count) {
+    cartItems = await db.count('cart_items', { cart_id: cartId })
+  } else {
+    cartItems = await db.find('cart_items', { cart_id: cartId })
+  }
+
   res.json({ status: 'success', data: cartItems })
 })
 
