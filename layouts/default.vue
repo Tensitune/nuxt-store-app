@@ -10,6 +10,18 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item to="/cart" router exact>
+          <v-list-item-action>
+            <v-badge v-if="cartItemsCount" color="green" :content="cartItemsCount" overlap bordered>
+              <v-icon>mdi-cart-outline</v-icon>
+            </v-badge>
+            <v-icon v-else>mdi-cart-outline</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Корзина</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -21,6 +33,15 @@
         <v-btn v-for="(item, i) in items" :key="i" :to="item.to" class="mx-1" router text>
           <v-icon class="nav-icon">{{ item.icon }}</v-icon>
           <h4>{{ item.title }}</h4>
+        </v-btn>
+
+        <v-btn to="/cart" class="mx-1" router text>
+          <v-badge v-if="cartItemsCount" class="mr-2" color="green" :content="cartItemsCount" overlap bordered>
+            <v-icon class="nav-icon">mdi-cart-outline</v-icon>
+          </v-badge>
+          <v-icon v-else class="nav-icon">mdi-cart-outline</v-icon>
+
+          <h4>Корзина</h4>
         </v-btn>
       </template>
 
@@ -91,6 +112,7 @@ export default {
     clipped: true,
     drawer: false,
     fixed: true,
+    cartItemsCount: 0,
     items: [
       {
         icon: 'mdi-home-outline',
@@ -111,18 +133,13 @@ export default {
         icon: 'mdi-email-outline',
         title: 'Обратная связь',
         to: '/feedback'
-      },
-      {
-        icon: 'mdi-cart-outline',
-        title: 'Корзина',
-        to: '/cart'
       }
     ],
     footerIcons: [
       { icon: 'mdi-discord', uri: 'https://discord.gg/ETrKUWmCN4' },
-      { icon: 'mdi-twitter', uri: '' },
-      { icon: 'mdi-vk', uri: '' },
-      { icon: 'mdi-instagram', uri: '' }
+      { icon: 'mdi-twitter', uri: 'https://twitter.com' },
+      { icon: 'mdi-vk', uri: 'https://vk.com' },
+      { icon: 'mdi-instagram', uri: 'https://www.instagram.com' }
     ]
   }),
   computed: {
@@ -135,11 +152,11 @@ export default {
       return true
     }
   },
-  mounted() {
-    this.$axios.$get('/auth/profile').then(res => {
-      if (res.status === 'error') return
-      this.$store.commit('user/set', res.data)
-    })
+  async mounted() {
+    this.cartItemsCount = (await this.$axios.$get('/cart?count=true')).data ?? 0
+
+    const user = (await this.$axios.$get('/auth/profile')).data ?? false
+    this.$store.commit('user/set', user)
   },
   methods: {
     async signOut() {
