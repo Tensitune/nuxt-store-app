@@ -83,6 +83,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data: () => ({
     title: 'Nuxt Store',
@@ -124,9 +126,9 @@ export default {
     ]
   }),
   computed: {
-    user() {
-      return this.$store.getters['user/data']
-    },
+    ...mapState({
+      user: state => state.user.data
+    }),
     showDrawer() {
       const disabledSizes = ['xs', 'sm', 'md']
       if (disabledSizes.includes(this.$vuetify.breakpoint.name)) return false
@@ -140,10 +142,9 @@ export default {
     })
   },
   methods: {
-    signOut() {
-      this.$axios.get('/auth/signout').then(() => {
-        window.location.reload()
-      })
+    async signOut() {
+      await this.$axios.$get('/auth/signout')
+      window.location.reload()
     }
   }
 }
