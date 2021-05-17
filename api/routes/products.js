@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:productId', async (req, res) => {
-  const products = await db.findOne('products', { cat_id: req.params.productId })
+  const products = await db.findOne('products', { id: req.params.productId })
   res.json({ status: 'success', data: products })
 })
 
