@@ -14,6 +14,29 @@ router.get('/', async (req, res) => {
   res.json({ status: 'success', data: products })
 })
 
+router.get('/popular', async (req, res) => {
+  let products = await db.find('products')
+
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i]
+    const reviews = await db.find('reviews', { product_id: product.id })
+
+    if (reviews.length) {
+      const rating = []
+      reviews.map(review => rating.push(review.rating))
+      products[i].rating = rating.reduce((a, b) => a + b) / rating.length
+    } else {
+      products[i].rating = 0
+    }
+  }
+  products = await products.filter(product => {
+    if (product.rating < 4) return false
+    return true
+  }).sort((a, b) => (a.rating > b.rating))
+
+  res.json({ status: 'success', data: products.slice(0, 9) })
+})
+
 router.get('/:productId', async (req, res) => {
   const products = await db.findOne('products', { id: req.params.productId })
   res.json({ status: 'success', data: products })
