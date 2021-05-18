@@ -50,6 +50,7 @@ export default {
     }
   },
   data: () => ({
+    valid: true,
     disabled: false,
     dialog: false,
     quantity: 0,
