@@ -18,11 +18,23 @@ exports.multipleColumns = (object, usingCommas = true) => {
         const k = tempKeys[i]
         const value = tempValues[i]
 
-        if (k === 'greaterThan') tempColumns += `${key} > ${value}`
-        else if (k === 'lessThan') tempColumns += `${key} < ${value}`
-        else tempColumns += `${key} = ${value}`
+        let keyFound = true
+        switch (k) {
+          case 'greaterThan':
+            tempColumns += `${key} > ${value}`
+            break
+          case 'lessThan':
+            tempColumns += `${key} < ${value}`
+            break
+          case 'like':
+            tempColumns += `${key} LIKE '%${value}%'`
+            break
+          default:
+            keyFound = false
+            break
+        }
 
-        if (i < tempKeys.length - 1) {
+        if (keyFound && (i < tempKeys.length - 1)) {
           tempColumns += ' AND '
         }
       }
