@@ -1,7 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600px" :disabled="disabled">
+  <v-dialog v-model="dialog" max-width="600px" :disabled="inShoppingCart">
     <template #activator="{ on, attrs }">
-      <v-btn color="deep-purple lighten-2" text v-bind="attrs" v-on="on">
+      <v-btn v-if="inShoppingCart" color="deep-purple lighten-2" to="/cart" nuxt text>
+        В корзине
+      </v-btn>
+      <v-btn v-else color="deep-purple lighten-2" text v-bind="attrs" v-on="on">
         Добавить в корзину
       </v-btn>
     </template>
@@ -42,6 +45,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   props: {
     productId: {
@@ -51,7 +56,6 @@ export default {
   },
   data: () => ({
     valid: true,
-    disabled: false,
     dialog: false,
     quantity: 0,
     error: '',
@@ -63,6 +67,16 @@ export default {
       v => v > 0 || 'Число должно быть больше 0'
     ]
   }),
+  computed: {
+    ...mapState({
+      cartItems: state => state.userCart
+    }),
+    inShoppingCart() {
+      const product = this.cartItems.filter(product => product.id === this.productId)[0]
+      if (product) return true
+      return false
+    }
+  },
   methods: {
     addToShoppingCart() {
       this.loading = true
