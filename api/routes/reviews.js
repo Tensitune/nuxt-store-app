@@ -14,20 +14,19 @@ router.get('/:productId', async (req, res) => {
   res.json({ status: 'success', data: reviews })
 })
 
-router.post('/',
+router.post('/:productId',
   UserMiddleware,
-  check('product_id').notEmpty().custom(async value => {
-    const product = await db.findOne('products', { id: value })
-    if (!product) return Promise.reject(new Error('Такого товара не существует'))
-  }),
   check('rating').notEmpty(),
   check('text').notEmpty(),
   async (req, res) => {
+    const product = await db.findOne('products', { id: req.params.productId })
+    if (!product) return res.json({ status: 'error', error: 'Такого товара не существует' })
+
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
     await db.insert('categories', {
-      product_id: req.body.product_id,
+      product_id: req.params.productId,
       user_id: req.session.userid,
       rating: req.body.rating,
       text: req.body.text
