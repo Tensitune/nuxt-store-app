@@ -1,6 +1,19 @@
 const { validationResult } = require('express-validator')
 
-exports.multipleColumns = (object, usingCommas = true) => {
+exports.multipleColumnSet = (object) => {
+  if (typeof object !== 'object') {
+    throw new TypeError('Неверный тип параметра, должен быть объект')
+  }
+
+  const keys = Object.keys(object)
+  const values = Object.values(object)
+
+  const columns = keys.map(key => `${key} = ?`).join(', ')
+
+  return { columns, values }
+}
+
+exports.multipleColumnWhere = (object) => {
   if (typeof object !== 'object') {
     throw new TypeError('Неверный тип параметра, должен быть объект')
   }
@@ -9,7 +22,7 @@ exports.multipleColumns = (object, usingCommas = true) => {
   let values = Object.values(object)
 
   const columns = keys.map(key => {
-    if (!usingCommas && typeof object[key] === 'object') {
+    if (typeof object[key] === 'object') {
       const tempKeys = Object.keys(object[key])
       const tempValues = Object.values(object[key])
 
@@ -44,7 +57,7 @@ exports.multipleColumns = (object, usingCommas = true) => {
     }
 
     return `${key} = ?`
-  }).join(`${usingCommas ? ', ' : ' AND '}`)
+  }).join(' AND ')
 
   return { columns, values }
 }
