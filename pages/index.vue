@@ -51,8 +51,8 @@
 <script>
 export default {
   async asyncData({ $axios }) {
-    const recommendedProducts = (await $axios.$get('/products?page=1&perPage=9')).data ?? []
-    const popularProducts = (await $axios.$get('/products/popular')).data ?? []
+    const recommendedProducts = (await $axios.$get('/products/recommended?page=1&perPage=9')).data
+    const popularProducts = (await $axios.$get('/products/popular')).data
     return { recommendedProducts, popularProducts }
   }
 }
