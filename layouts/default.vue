@@ -121,7 +121,6 @@ export default {
     clipped: true,
     drawer: false,
     fixed: true,
-    cartItemsCount: 0,
     items: [
       {
         icon: 'mdi-home-outline',
@@ -153,7 +152,8 @@ export default {
   }),
   computed: {
     ...mapState({
-      user: state => state.user.data
+      user: state => state.user,
+      cartItemsCount: state => state.userCart.length
     }),
     showDrawer() {
       const disabledSizes = ['xs', 'sm', 'md']
@@ -162,10 +162,13 @@ export default {
     }
   },
   async mounted() {
-    this.cartItemsCount = (await this.$axios.$get('/cart?count=true')).data
-
     const user = (await this.$axios.$get('/auth/profile')).data
-    this.$store.commit('user/set', user)
+    if (!user) return
+
+    const cartItems = (await this.$axios.$get('/cart')).data
+
+    this.$store.commit('setUser', user)
+    this.$store.commit('setUserCart', cartItems)
   },
   methods: {
     async signOut() {
