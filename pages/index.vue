@@ -6,15 +6,7 @@
           <v-carousel-item v-for="product of recommendedProducts" :key="product.id">
             <v-row class="my-6" align="center" justify="center">
               <v-col cols="auto">
-                <CardProduct
-                  :id="product.id"
-                  :title="product.title"
-                  :description="product.description"
-                  :image="product.thumbnail"
-                  :price="product.price"
-                  :stock="product.stock"
-                  max-width="90%"
-                />
+                <CardProduct :product="product" max-width="90%" />
               </v-col>
             </v-row>
           </v-carousel-item>
@@ -30,15 +22,7 @@
 
       <v-row v-if="popularProducts" class="my-3" justify="center" align="center">
         <v-col v-for="product of popularProducts" :key="product.id" cols="auto">
-          <CardProduct
-            :id="product.id"
-            :title="product.title"
-            :description="product.description"
-            :image="product.thumbnail"
-            :price="product.price"
-            :stock="product.stock"
-            max-width="360px"
-          />
+          <CardProduct :product="product" max-width="360px" />
         </v-col>
       </v-row>
       <div v-else>Товары не найдены</div>

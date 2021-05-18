@@ -77,15 +77,7 @@
         <Pagination v-if="productsCount && !loading" :count="productsCount" :limit="perPage" @onPageChange="onPageChange">
           <v-row>
             <v-col v-for="product of products" :key="product.id" cols="auto">
-              <CardProduct
-                :id="product.id"
-                :title="product.title"
-                :description="product.description"
-                :image="product.thumbnail"
-                :price="product.price"
-                :stock="product.stock"
-                max-width="425px"
-              />
+              <CardProduct :product="product" max-width="425px" />
             </v-col>
           </v-row>
         </Pagination>
