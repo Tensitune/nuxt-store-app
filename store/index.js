@@ -1,9 +1,14 @@
 export const state = () => ({
-  counter: 0
+  user: false,
+  userCart: []
 })
 
 export const mutations = {
-  increment(state) {
-    state.counter++
+  setUser(state, data) {
+    state.user = data
+  },
+
+  setUserCart(state, data) {
+    state.userCart = data
   }
 }
