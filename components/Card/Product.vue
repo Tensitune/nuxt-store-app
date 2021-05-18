@@ -18,10 +18,7 @@
         </div>
       </v-row>
 
-      <div class="my-2 subtitle-1">
-        {{ product.price }} &#8381;
-      </div>
-
+      <div class="my-2 subtitle-1">{{ price }}</div>
       <div class="text-truncate">{{ product.description }}</div>
 
       <strong :class="product.stock > 0 ? 'green--text' : 'orange--text'">
@@ -79,6 +76,9 @@ export default {
       }
 
       return rating
+    },
+    price() {
+      return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(this.product.price)
     }
   },
   async mounted() {
