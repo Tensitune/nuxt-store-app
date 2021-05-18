@@ -17,6 +17,10 @@ router.get('/', async (req, res) => {
 router.get('/:categoryId', async (req, res) => {
   const whereParams = { cat_id: req.params.categoryId }
 
+  if (req.query.title) {
+    whereParams.title = { like: req.query.title }
+  }
+
   if (req.query.priceFrom || req.query.priceTo) {
     whereParams.price = {}
     if (req.query.priceFrom) whereParams.price.greaterThan = req.query.priceFrom
