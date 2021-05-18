@@ -5,15 +5,17 @@ class DB {
   count = async (table, params = {}) => {
     let sql = `SELECT COUNT(id) as count FROM ${table} USE INDEX (PRIMARY)`
 
+    let result
     if (Object.keys(params).length) {
       const { columns, values } = multipleColumnWhere(params)
       sql = `SELECT COUNT(id) as count FROM ${table} WHERE ${columns}`
 
-      const result = await query(sql, [...values])
+      result = await query(sql, [...values])
       return result[0].count
     }
 
-    return await query(sql)
+    result = await query(sql)
+    return result[0].count
   }
 
   find = async (table, params = {}, order = {}) => {
