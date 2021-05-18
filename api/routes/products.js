@@ -10,6 +10,30 @@ const db = require('../db')
 const getPagedRows = require('../utils/getPagedRows')
 
 router.get('/', async (req, res) => {
+  const whereParams = {}
+
+  if (req.query.title) {
+    whereParams.title = { like: req.query.title }
+  }
+
+  if (req.query.priceFrom || req.query.priceTo) {
+    whereParams.price = {}
+    if (req.query.priceFrom) whereParams.price.greaterThan = req.query.priceFrom
+    if (req.query.priceTo) whereParams.price.lessThan = req.query.priceTo
+  }
+
+  const orderParam = {}
+  if (req.query.orderBy) {
+    const orderBy = req.query.orderBy.split(',')
+    orderParam.by = orderBy[0]
+    orderParam.desc = orderBy[1] === 'true'
+  }
+
+  const products = await getPagedRows('products', whereParams, req.query, orderParam)
+  res.json({ status: 'success', data: products })
+})
+
+router.get('/recommended', async (req, res) => {
   const products = await getPagedRows('products', { recommended: true }, req.query)
   res.json({ status: 'success', data: products })
 })
@@ -68,7 +92,7 @@ router.post('/',
   }
 )
 
-router.put('/',
+router.put('/:productId',
   AdminMiddleware,
   check('id').notEmpty().custom(async value => {
     const product = await db.findOne('products', { id: value })
