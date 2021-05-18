@@ -60,12 +60,21 @@
             </v-btn>
           </template>
           <v-list>
+            <v-list-item link router to="/profile">
+              <v-list-item-title class="d-flex justify-start align-center">
+                <v-icon>mdi-account</v-icon>
+                Профиль
+              </v-list-item-title>
+            </v-list-item>
             <v-list-item v-if="user.admin" link router to="/admin">
               <v-list-item-title class="d-flex justify-start align-center">
                 <v-icon>mdi-shield-account</v-icon>
                 Админ-панель
               </v-list-item-title>
             </v-list-item>
+
+            <v-divider class="my-2" />
+
             <v-list-item link @click="signOut">
               <v-list-item-title class="d-flex justify-start align-center">
                 <v-icon>mdi-logout</v-icon>
