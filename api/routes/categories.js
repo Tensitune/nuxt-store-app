@@ -55,15 +55,14 @@ router.post('/',
   }
 )
 
-router.put('/',
+router.put('/:categoryId',
   AdminMiddleware,
-  check('id').notEmpty().custom(async value => {
-    const category = await db.findOne('categories', { id: value })
-    if (!category) return Promise.reject(new Error('Такой категории не существует'))
-  }),
   check('title').notEmpty(),
   check('icon').notEmpty(),
   async (req, res) => {
+    const category = await db.findOne('categories', { id: req.params.categoryId })
+    if (!category) return res.json({ status: 'error', error: 'Такой категории не существует' })
+
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
@@ -76,19 +75,15 @@ router.put('/',
   }
 )
 
-router.delete('/',
-  AdminMiddleware,
-  check('id').notEmpty().custom(async value => {
-    const category = await db.findOne('categories', { id: value })
-    if (!category) return Promise.reject(new Error('Такой категории не существует'))
-  }),
-  async (req, res) => {
-    const error = validationResult(req)
-    if (error) return res.json({ status: 'error', error: error.msg })
+router.delete('/:categoryId', AdminMiddleware, async (req, res) => {
+  const category = await db.findOne('categories', { id: req.params.categoryId })
+  if (!category) return res.json({ status: 'error', error: 'Такой категории не существует' })
 
-    await db.delete('categories', req.body.id)
-    res.json({ status: 'success' })
-  }
-)
+  const error = validationResult(req)
+  if (error) return res.json({ status: 'error', error: error.msg })
+
+  await db.delete('categories', req.body.id)
+  res.json({ status: 'success' })
+})
 
 module.exports = router

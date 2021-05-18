@@ -37,15 +37,14 @@ router.post('/',
   }
 )
 
-router.put('/',
+router.put('/:reviewId',
   UserMiddleware,
-  check('id').notEmpty().custom(async (value, { req }) => {
-    const review = await db.findOne('reviews', { id: value, user_id: req.session.userid })
-    if (!review) return Promise.reject(new Error('Такого отзыва не существует'))
-  }),
   check('rating').notEmpty(),
   check('text').notEmpty(),
   async (req, res) => {
+    const review = await db.findOne('reviews', { id: req.params.reviewId })
+    if (!review) return res.json({ status: 'error', error: 'Такого отзыва не существует' })
+
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
@@ -58,19 +57,15 @@ router.put('/',
   }
 )
 
-router.delete('/',
-  UserMiddleware,
-  check('id').notEmpty().custom(async (value, { req }) => {
-    const review = await db.findOne('reviews', { id: value, user_id: req.session.userid })
-    if (!review) return Promise.reject(new Error('Такого отзыва не существует'))
-  }),
-  async (req, res) => {
-    const error = validationResult(req)
-    if (error) return res.json({ status: 'error', error: error.msg })
+router.delete('/:reviewId', UserMiddleware, async (req, res) => {
+  const review = await db.findOne('reviews', { id: req.params.reviewId })
+  if (!review) return res.json({ status: 'error', error: 'Такого отзыва не существует' })
 
-    await db.delete('reviews', req.body.id)
-    res.json({ status: 'success' })
-  }
-)
+  const error = validationResult(req)
+  if (error) return res.json({ status: 'error', error: error.msg })
+
+  await db.delete('reviews', req.body.id)
+  res.json({ status: 'success' })
+})
 
 module.exports = router

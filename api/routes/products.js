@@ -92,49 +92,41 @@ router.post('/',
   }
 )
 
-router.put('/:productId',
-  AdminMiddleware,
-  check('id').notEmpty().custom(async value => {
-    const product = await db.findOne('products', { id: value })
-    if (!product) return Promise.reject(new Error('Такого товара не существует'))
-  }),
-  async (req, res) => {
-    const error = validationResult(req)
-    if (error) return res.json({ status: 'error', error: error.msg })
+router.put('/:productId', AdminMiddleware, async (req, res) => {
+  const product = await db.findOne('products', { id: req.params.productId })
+  if (!product) return res.json({ status: 'error', error: 'Такого товара не существует' })
 
-    const data = {}
+  const error = validationResult(req)
+  if (error) return res.json({ status: 'error', error: error.msg })
 
-    if (req.body.cat_id) {
-      const category = await db.findOne('categories', { id: req.body.cat_id })
-      if (!category) return res.json({ status: 'error', error: 'Такой категории не существует' })
+  const data = {}
 
-      data.cat_id = req.body.cat_id
-    }
+  if (req.body.cat_id) {
+    const category = await db.findOne('categories', { id: req.body.cat_id })
+    if (!category) return res.json({ status: 'error', error: 'Такой категории не существует' })
 
-    if (req.body.title) data.title = req.body.title
-    if (req.body.description) data.description = req.body.description
-    if (req.body.price) data.price = req.body.price
-    if (req.body.stock) data.stock = req.body.stock
-    if (req.body.thumbnail) data.thumbnail = req.body.thumbnail
-
-    await db.update('products', req.body.id, data)
-    res.json({ status: 'success' })
+    data.cat_id = req.body.cat_id
   }
-)
 
-router.delete('/',
-  AdminMiddleware,
-  check('id').notEmpty().custom(async value => {
-    const product = await db.findOne('products', { id: value })
-    if (!product) return Promise.reject(new Error('Такого товара не существует'))
-  }),
-  async (req, res) => {
-    const error = validationResult(req)
-    if (error) return res.json({ status: 'error', error: error.msg })
+  if (req.body.title) data.title = req.body.title
+  if (req.body.description) data.description = req.body.description
+  if (req.body.price) data.price = req.body.price
+  if (req.body.stock) data.stock = req.body.stock
+  if (req.body.thumbnail) data.thumbnail = req.body.thumbnail
 
-    await db.delete('products', req.body.id)
-    res.json({ status: 'success' })
-  }
-)
+  await db.update('products', req.body.id, data)
+  res.json({ status: 'success' })
+})
+
+router.delete('/:productId', AdminMiddleware, async (req, res) => {
+  const product = await db.findOne('products', { id: req.params.productId })
+  if (!product) return res.json({ status: 'error', error: 'Такого товара не существует' })
+
+  const error = validationResult(req)
+  if (error) return res.json({ status: 'error', error: error.msg })
+
+  await db.delete('products', req.body.id)
+  res.json({ status: 'success' })
+})
 
 module.exports = router
