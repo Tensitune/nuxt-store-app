@@ -69,7 +69,7 @@ export default {
       const isValid = this.$refs.form.validate()
       if (isValid) {
         this.$axios.$post('/cart', {
-          product_id: this.productId,
+          productId: this.productId,
           quantity: this.quantity
         }).then(res => {
           this.loading = false
