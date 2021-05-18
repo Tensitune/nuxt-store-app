@@ -103,7 +103,7 @@ export default {
     }
   },
   async mounted() {
-    this.reviews = (await this.$axios.$get(`/reviews/${this.id}?getAll=true`)).data ?? []
+    this.reviews = (await this.$axios.$get(`/reviews/${this.id}?getAll=true`)).data
   }
 }
 </script>

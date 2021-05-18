@@ -153,9 +153,9 @@ export default {
     }
   },
   async mounted() {
-    this.cartItemsCount = (await this.$axios.$get('/cart?count=true')).data ?? 0
+    this.cartItemsCount = (await this.$axios.$get('/cart?count=true')).data
 
-    const user = (await this.$axios.$get('/auth/profile')).data ?? false
+    const user = (await this.$axios.$get('/auth/profile')).data
     this.$store.commit('user/set', user)
   },
   methods: {
