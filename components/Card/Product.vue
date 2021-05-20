@@ -63,6 +63,9 @@ export default {
   data: () => ({
     reviews: []
   }),
+  async fetch() {
+    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data
+  },
   computed: {
     ...mapState({
       user: state => state.user
@@ -80,9 +83,6 @@ export default {
     price() {
       return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(this.product.price)
     }
-  },
-  async mounted() {
-    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data
   }
 }
 </script>
