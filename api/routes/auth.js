@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt')
 const { check } = require('express-validator')
 const { validationResult } = require('../utils')
 
-const { UserMiddleware } = require('../middleware')
 const db = require('../db')
 
 router.post('/signin',
@@ -20,11 +19,15 @@ router.post('/signin',
     if (error) return res.json({ status: 'error', error: error.msg })
 
     const user = await db.findOne('users', { username: req.body.username })
-    if (!bcrypt.compareSync(req.body.password, user.password)) {
+    const passwordCheck = await bcrypt.compare(req.body.password, user.password)
+
+    if (!passwordCheck) {
       return res.json({ status: 'error', error: 'Неверный пароль' })
     }
 
-    req.session.userid = user.id
+    delete user.password
+    req.session.user = user
+
     res.json({ status: 'success' })
   }
 )
@@ -51,24 +54,21 @@ router.post('/signup',
       address: req.body.address ?? ''
     }).then(async (userId) => {
       await db.insert('shopping_carts', { user_id: userId })
+
+      const user = await db.findOne('users', { id: userId })
+      if (user) {
+        delete user.password
+        req.session.user = user
+      }
+
       res.json({ status: 'success' })
     })
   }
 )
 
 router.get('/signout', (req, res) => {
-  if (req.session.userid) delete req.session.userid
+  if (req.session.user) delete req.session.user
   res.redirect('/')
-})
-
-router.get('/profile', UserMiddleware, async (req, res) => {
-  const user = await db.findOne('users', { id: req.session.userid })
-  if (!user) {
-    return res.json({ status: 'error', error: 'Пользователь не найден' })
-  }
-
-  delete user.password
-  res.json({ status: 'success', data: user })
 })
 
 module.exports = router

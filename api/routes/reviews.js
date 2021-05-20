@@ -27,7 +27,7 @@ router.post('/:productId',
 
     await db.insert('categories', {
       product_id: req.params.productId,
-      user_id: req.session.userid,
+      user_id: req.session.user.id,
       rating: req.body.rating,
       text: req.body.text
     })
