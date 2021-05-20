@@ -21,8 +21,10 @@ app.use('/api/cart', require('./routes/cart'))
 
 module.exports = app
 if (require.main === module) {
+  const host = process.env.HOST || '127.0.0.1'
   const port = process.env.PORT || 3001
-  app.listen(port, () => {
-    console.log(`API server listening on port ${port}`)
+
+  app.listen(port, host, () => {
+    console.log(`Server listening on http://${host}:${port}`)
   })
 }
