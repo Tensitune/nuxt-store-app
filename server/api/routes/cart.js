@@ -1,89 +1,85 @@
-const { Router } = require('express')
-const router = Router()
-
 const { check } = require('express-validator')
 const { validationResult } = require('../utils')
 
 const { UserMiddleware } = require('../middleware')
-const db = require('../db')
 
-router.get('/', UserMiddleware, async (req, res) => {
-  let cartId = (await db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-  if (!cartId) await db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+module.exports = (api, app) => {
+  api.get('/cart', UserMiddleware, async (req, res) => {
+    let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
+    if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
 
-  let cartItems = []
-  if (req.query.count) {
-    cartItems = await db.count('cart_items', { cart_id: cartId })
-  } else {
-    cartItems = await db.find('cart_items', { cart_id: cartId })
-  }
+    let cartItems = []
+    if (req.query.count) {
+      cartItems = await app.db.count('cart_items', { cart_id: cartId })
+    } else {
+      cartItems = await app.db.find('cart_items', { cart_id: cartId })
+    }
 
-  res.json({ status: 'success', data: cartItems })
-})
+    res.json({ status: 'success', data: cartItems })
+  })
 
-router.post('/',
-  UserMiddleware,
-  check('productId').notEmpty().custom(async (value, { req }) => {
-    let cartId = (await db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-    if (!cartId) await db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+  api.post('/cart',
+    UserMiddleware,
+    check('productId').notEmpty().custom(async (value, { req }) => {
+      let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
+      if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
 
-    const category = await db.findOne('cart_items', { cart_id: cartId, product_id: value })
-    if (category) return Promise.reject(new Error('Этот товар уже есть в вашей корзине'))
-  }),
-  check('quantity').notEmpty(),
-  async (req, res) => {
-    const error = validationResult(req)
-    if (error) return res.json({ status: 'error', error: error.msg })
+      const category = await app.db.findOne('cart_items', { cart_id: cartId, product_id: value })
+      if (category) return Promise.reject(new Error('Этот товар уже есть в вашей корзине'))
+    }),
+    check('quantity').notEmpty(),
+    async (req, res) => {
+      const error = validationResult(req)
+      if (error) return res.json({ status: 'error', error: error.msg })
 
-    let cartId = (await db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-    if (!cartId) await db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+      let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
+      if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
 
-    await db.insert('cart_items', {
-      cart_id: cartId,
-      product_id: req.body.productId,
-      quantity: req.body.quantity
-    })
+      await app.db.insert('cart_items', {
+        cart_id: cartId,
+        product_id: req.body.productId,
+        quantity: req.body.quantity
+      })
 
-    res.json({ status: 'success' })
-  }
-)
+      res.json({ status: 'success' })
+    }
+  )
 
-router.put('/:productId',
-  UserMiddleware,
-  check('quantity').notEmpty(),
-  async (req, res) => {
-    const product = await db.findOne('products', { id: req.params.productId })
+  api.put('/cart/:productId',
+    UserMiddleware,
+    check('quantity').notEmpty(),
+    async (req, res) => {
+      const product = await app.db.findOne('products', { id: req.params.productId })
+      if (!product) return res.json({ status: 'error', error: 'Такого товара не существует' })
+
+      const error = validationResult(req)
+      if (error) return res.json({ status: 'error', error: error.msg })
+
+      let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
+      if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+
+      const cartItem = await app.db.findOne('cart_items', { cart_id: cartId, product_id: req.params.productId })
+      if (!cartItem) return res.json({ status: 'error', error: 'Этот товар в корзине не найден' })
+
+      await app.db.update('cart_items', cartItem.id, { quantity: req.body.quantity })
+      res.json({ status: 'success' })
+    }
+  )
+
+  api.delete('/cart/:productId', UserMiddleware, async (req, res) => {
+    const product = await app.db.findOne('products', { id: req.params.productId })
     if (!product) return res.json({ status: 'error', error: 'Такого товара не существует' })
 
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
-    let cartId = (await db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-    if (!cartId) await db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+    let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
+    if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
 
-    const cartItem = await db.findOne('cart_items', { cart_id: cartId, product_id: req.params.productId })
+    const cartItem = await app.db.findOne('cart_items', { cart_id: cartId, product_id: req.params.productId })
     if (!cartItem) return res.json({ status: 'error', error: 'Этот товар в корзине не найден' })
 
-    await db.update('cart_items', cartItem.id, { quantity: req.body.quantity })
+    await app.db.delete('cart_items', cartItem.id)
     res.json({ status: 'success' })
-  }
-)
-
-router.delete('/:productId', UserMiddleware, async (req, res) => {
-  const product = await db.findOne('products', { id: req.params.productId })
-  if (!product) return res.json({ status: 'error', error: 'Такого товара не существует' })
-
-  const error = validationResult(req)
-  if (error) return res.json({ status: 'error', error: error.msg })
-
-  let cartId = (await db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-  if (!cartId) await db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
-
-  const cartItem = await db.findOne('cart_items', { cart_id: cartId, product_id: req.params.productId })
-  if (!cartItem) return res.json({ status: 'error', error: 'Этот товар в корзине не найден' })
-
-  await db.delete('cart_items', cartItem.id)
-  res.json({ status: 'success' })
-})
-
-module.exports = router
+  })
+}
