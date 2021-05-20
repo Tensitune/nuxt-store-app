@@ -72,8 +72,11 @@ export default {
       cartItems: state => state.userCart
     }),
     inShoppingCart() {
+      if (!this.cartItems) return false
+
       const product = this.cartItems.filter(product => product.id === this.productId)[0]
       if (product) return true
+
       return false
     }
   },
