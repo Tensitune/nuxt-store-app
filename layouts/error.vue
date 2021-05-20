@@ -1,60 +1,35 @@
 <template>
-  <section class="container">
-    <div>
-      <Logo />
-      <h1 class="title">
-        {{ error.statusCode }}
-      </h1>
-      <h2 class="info">
-        {{ error.message }}
-      </h2>
-      <nuxt-link v-if="error.statusCode === 404" class="button" to="/">
-        Homepage
-      </nuxt-link>
+  <v-container>
+    <div class="text-center pa-4">
+      <h2>{{ error.statusCode }}</h2>
+      <h3 class="font-weight-regular">{{ errorMessage }}</h3>
+      <v-btn v-if="error.statusCode === 404" class="mt-2" color="deep-purple lighten-2 white--text" router to="/">
+        Главная
+      </v-btn>
     </div>
-  </section>
+  </v-container>
 </template>
 <script>
 export default {
-  props: ['error']
+  props: {
+    error: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    errorMessage() {
+      switch (this.error.statusCode) {
+        case 403:
+          return 'У вас нет доступа к этой странице'
+        case 404:
+          return 'Страница не найдена. Убедитесь, что адрес правильный и страница не перемещена'
+        case 500:
+          return 'Страница не может быть отображена из-за внутренней ошибки'
+        default:
+          return 'Что-то пошло не так'
+      }
+    }
+  }
 }
 </script>
-
-<style scoped>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-.info
-{
-  font-weight: 300;
-  color: #9aabb1;
-  margin: 0;
-}
-.button
-{
-  margin-top: 50px;
-}
-</style>
