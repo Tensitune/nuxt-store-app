@@ -1,14 +1,22 @@
 export const state = () => ({
-  user: false,
-  userCart: []
+  user: null,
+  userCart: null
 })
 
 export const mutations = {
-  setUser(state, data) {
-    state.user = data
+  SET_USER(state, user) {
+    state.user = user
   },
 
-  setUserCart(state, data) {
-    state.userCart = data
+  SET_CART(state, cart) {
+    state.userCart = cart
+  }
+}
+
+export const actions = {
+  nuxtServerInit ({ commit }, { req }) {
+    if (req.session.user) {
+      commit('SET_USER', req.session.user)
+    }
   }
 }
