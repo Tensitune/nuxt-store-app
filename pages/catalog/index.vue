@@ -71,7 +71,7 @@
           label="Поиск"
           solo
           clearable
-          @click:append-outer="fetchProducts"
+          @click:append-outer="$fetch"
         />
 
         <Pagination v-if="productsCount && !loading" :count="productsCount" :limit="perPage" @onPageChange="onPageChange">
@@ -121,6 +121,17 @@ export default {
       desc: false
     }
   }),
+  async fetch() {
+    this.loading = true
+
+    const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : '/products'
+    this.productsCount = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&priceFrom=' + this.sliderRange[0] +
+      '&priceTo=' + this.sliderRange[1])).data ?? 0
+    this.products = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&page=1&perPage=' + this.perPage + '&priceFrom=' +
+      this.sliderRange[0] + '&priceTo=' + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? []
+
+    this.loading = false
+  },
   computed: {
     categoryTitle() {
       const tempCategories = [{ id: 0, title: 'Все товары' }, ...this.categories]
@@ -136,10 +147,10 @@ export default {
   },
   watch: {
     activeCategory: async function () {
-      await this.fetchProducts()
+      await this.$fetch()
     },
     sliderRange: async function() {
-      await this.fetchProducts()
+      await this.$fetch()
     },
     sort: async function(val) {
       switch (val) {
@@ -159,7 +170,7 @@ export default {
           break
       }
 
-      await this.fetchProducts()
+      await this.$fetch()
     }
   },
   methods: {
@@ -167,17 +178,6 @@ export default {
       const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : '/products'
       this.products = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&page=' + page + '&perPage=' + this.perPage +
         '&priceFrom=' + this.sliderRange[0] + '&priceTo=' + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? []
-    },
-    async fetchProducts() {
-      this.loading = true
-
-      const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : '/products'
-      this.productsCount = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&priceFrom=' + this.sliderRange[0] +
-        '&priceTo=' + this.sliderRange[1])).data ?? 0
-      this.products = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&page=1&perPage=' + this.perPage + '&priceFrom=' +
-        this.sliderRange[0] + '&priceTo=' + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? []
-
-      this.loading = false
     }
   }
 }
