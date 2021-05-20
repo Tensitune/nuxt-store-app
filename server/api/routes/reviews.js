@@ -21,7 +21,7 @@ module.exports = (api, app) => {
       const error = validationResult(req)
       if (error) return res.json({ status: 'error', error: error.msg })
 
-      await app.db.insert('categories', {
+      await app.db.insert('reviews', {
         product_id: req.params.productId,
         user_id: req.session.user.id,
         rating: req.body.rating,
