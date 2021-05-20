@@ -71,9 +71,7 @@ export default {
   /*
   ** Server Middleware
   */
-  serverMiddleware: {
-    '/api': '~/api'
-  },
+  serverMiddleware: ['~/api'],
 
   router: {
     prefetchLinks: false
