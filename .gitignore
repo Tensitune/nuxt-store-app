@@ -91,3 +91,6 @@ sw.*
 
 # Package lock file
 package-lock.json
+
+# Static stuff
+static/img/products
