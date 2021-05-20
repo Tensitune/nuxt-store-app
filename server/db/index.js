@@ -1,4 +1,4 @@
-const { multipleColumnSet, multipleColumnWhere } = require('../utils')
+const { multipleColumnSet, multipleColumnWhere } = require('./utils')
 const query = require('./connection')
 
 class DB {
