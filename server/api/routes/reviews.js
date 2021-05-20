@@ -43,7 +43,7 @@ module.exports = (api, app) => {
       const error = validationResult(req)
       if (error) return res.json({ status: 'error', error: error.msg })
 
-      await app.db.update('reviews', req.body.id, {
+      await app.db.update('reviews', req.params.reviewId, {
         rating: req.body.rating,
         text: req.body.text
       })
@@ -59,7 +59,7 @@ module.exports = (api, app) => {
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
-    await app.db.delete('reviews', req.body.id)
+    await app.db.delete('reviews', req.params.reviewId)
     res.json({ status: 'success' })
   })
 }

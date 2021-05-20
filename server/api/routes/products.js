@@ -110,7 +110,7 @@ module.exports = (api, app) => {
     if (req.body.stock) data.stock = req.body.stock
     if (req.body.thumbnail) data.thumbnail = req.body.thumbnail
 
-    await app.db.update('products', req.body.id, data)
+    await app.db.update('products', req.params.productId, data)
     res.json({ status: 'success' })
   })
 
@@ -121,7 +121,7 @@ module.exports = (api, app) => {
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
-    await app.db.delete('products', req.body.id)
+    await app.db.delete('products', req.params.productId)
     res.json({ status: 'success' })
   })
 }

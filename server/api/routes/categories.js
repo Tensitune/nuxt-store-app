@@ -62,7 +62,7 @@ module.exports = (api, app) => {
       const error = validationResult(req)
       if (error) return res.json({ status: 'error', error: error.msg })
 
-      await app.db.update('categories', req.body.id, {
+      await app.db.update('categories', req.params.categoryId, {
         title: req.body.title,
         icon: req.body.icon
       })
@@ -78,7 +78,7 @@ module.exports = (api, app) => {
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
-    await app.db.delete('categories', req.body.id)
+    await app.db.delete('categories', req.params.categoryId)
     res.json({ status: 'success' })
   })
 }
