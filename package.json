@@ -23,6 +23,9 @@
     "express-validator": "^6.10.0",
     "intersection-observer": "^0.12.0",
     "jquery": "^3.5.1",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.mapkeys": "^4.6.0",
+    "lodash.snakecase": "^4.1.1",
     "mysql2": "^2.2.5",
     "nuxt": "latest",
     "vue-lazy-hydration": "*"
