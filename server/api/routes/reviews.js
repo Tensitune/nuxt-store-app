@@ -39,6 +39,10 @@ module.exports = (api, app) => {
       const review = await app.db.findOne('reviews', { id: req.params.reviewId })
       if (!review) return res.json({ status: 'error', error: 'Такого отзыва не существует' })
 
+      if (review.userId !== req.session.user.id) {
+        return res.json({ status: 'error', error: 'Вы не можете изменить чужой отзыв' })
+      }
+
       const error = validationResult(req)
       if (error) return res.json({ status: 'error', error: error.msg })
 
@@ -55,8 +59,9 @@ module.exports = (api, app) => {
     const review = await app.db.findOne('reviews', { id: req.params.reviewId })
     if (!review) return res.json({ status: 'error', error: 'Такого отзыва не существует' })
 
-    const error = validationResult(req)
-    if (error) return res.json({ status: 'error', error: error.msg })
+    if (review.userId !== req.session.user.id) {
+      return res.json({ status: 'error', error: 'Вы не можете удалить чужой отзыв' })
+    }
 
     await app.db.delete('reviews', req.params.reviewId)
     res.json({ status: 'success' })
