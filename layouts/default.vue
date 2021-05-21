@@ -6,6 +6,7 @@
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
+
           <v-list-item-content>
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
@@ -18,6 +19,7 @@
             </v-badge>
             <v-icon v-else>mdi-cart-outline</v-icon>
           </v-list-item-action>
+
           <v-list-item-content>
             <v-list-item-title>Корзина</v-list-item-title>
           </v-list-item-content>
@@ -31,15 +33,15 @@
 
       <template v-if="showDrawer">
         <v-btn v-for="(item, i) in items" :key="i" :to="item.to" class="mx-1" router text>
-          <v-icon class="nav-icon">{{ item.icon }}</v-icon>
+          <v-icon>{{ item.icon }}</v-icon>
           <h4>{{ item.title }}</h4>
         </v-btn>
 
         <v-btn v-if="user" to="/cart" class="mx-1" router text>
           <v-badge v-if="cartItems" class="mr-2" color="green" :content="cartItems.length" overlap bordered>
-            <v-icon class="nav-icon">mdi-cart-outline</v-icon>
+            <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
-          <v-icon v-else class="nav-icon">mdi-cart-outline</v-icon>
+          <v-icon v-else>mdi-cart-outline</v-icon>
 
           <h4>Корзина</h4>
         </v-btn>

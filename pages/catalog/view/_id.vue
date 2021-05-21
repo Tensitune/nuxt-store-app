@@ -125,8 +125,7 @@ export default {
       return review[0] ?? false
     },
     paginationReviews() {
-      return this.reviews.filter(review => (this.userReview && review.id !== this.userReview.id))
-        .slice(this.page - 1, this.page * this.perPage)
+      return this.reviews.filter(review => (review.id !== this.userReview.id)).slice(this.page - 1, this.page * this.perPage)
     },
     rating() {
       let rating = []
