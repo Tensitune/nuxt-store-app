@@ -34,7 +34,9 @@ class DBConnection {
         if (err) return reject(err)
 
         // Преобразование snake_case ключей в camelCase у объектов строк
-        result = result.map(row => mapKeys(row, (_, k) => camelCase(k)))
+        if (Array.isArray(result)) {
+          result = result.map(row => mapKeys(row, (v, k) => camelCase(k)))
+        }
 
         resolve(result)
       }
