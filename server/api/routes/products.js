@@ -1,8 +1,7 @@
 const { check } = require('express-validator')
-const { validationResult } = require('../utils')
+const { getPagedRows, validationResult } = require('../helpers')
 
 const { AdminMiddleware } = require('../middleware')
-const { getPagedRows } = require('../utils')
 
 module.exports = (api, app) => {
   api.get('/products', async (req, res) => {

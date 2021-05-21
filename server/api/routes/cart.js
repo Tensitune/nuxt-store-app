@@ -1,5 +1,5 @@
 const { check } = require('express-validator')
-const { validationResult } = require('../utils')
+const { validationResult } = require('../helpers')
 
 const { UserMiddleware } = require('../middleware')
 

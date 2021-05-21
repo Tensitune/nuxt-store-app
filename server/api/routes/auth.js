@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 
 const { check } = require('express-validator')
-const { validationResult } = require('../utils')
+const { validationResult } = require('../helpers')
 
 module.exports = (api, app) => {
   api.post('/auth/signin',
