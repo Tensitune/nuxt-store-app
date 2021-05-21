@@ -12,7 +12,7 @@
 
     <v-card-text>
       <v-row align="center" class="pl-2">
-        <v-rating :value="Math.round(rating)" color="amber" dense half-increments readonly size="14" />
+        <v-rating :value="ratingValue" color="amber" dense half-increments readonly size="14" />
         <div class="grey--text ml-1">
           {{ reviews.length ? `${rating} (${reviews.length})` : 'Нет отзывов' }}
         </div>
@@ -79,6 +79,10 @@ export default {
       }
 
       return rating
+    },
+    ratingValue() {
+      const value = (Math.round(this.rating * 2) / 2).toFixed(1)
+      return parseFloat(value)
     },
     price() {
       return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(this.product.price)
