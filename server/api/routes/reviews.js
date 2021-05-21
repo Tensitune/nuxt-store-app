@@ -5,7 +5,7 @@ const { UserMiddleware } = require('../middleware')
 
 module.exports = (api, app) => {
   api.get('/reviews/:productId', async (req, res) => {
-    const reviews = await getPagedRows(app.db, 'reviews', { product_id: req.params.productId }, req.query)
+    const reviews = await getPagedRows(app.db, 'reviews', { productId: req.params.productId }, req.query)
     res.json({ status: 'success', data: reviews })
   })
 
@@ -21,8 +21,8 @@ module.exports = (api, app) => {
       if (error) return res.json({ status: 'error', error: error.msg })
 
       await app.db.insert('reviews', {
-        product_id: req.params.productId,
-        user_id: req.session.user.id,
+        productId: req.params.productId,
+        userId: req.session.user.id,
         rating: req.body.rating,
         text: req.body.text
       })

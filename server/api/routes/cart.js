@@ -5,14 +5,14 @@ const { UserMiddleware } = require('../middleware')
 
 module.exports = (api, app) => {
   api.get('/cart', UserMiddleware, async (req, res) => {
-    let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-    if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+    let cartId = (await app.db.findOne('shopping_carts', { userId: req.session.user.id })).id
+    if (!cartId) await app.db.insert('shopping_carts', { userId: req.session.user.id }).then(id => (cartId = id))
 
     let cartItems = []
     if (req.query.count) {
-      cartItems = await app.db.count('cart_items', { cart_id: cartId })
+      cartItems = await app.db.count('cart_items', { cartId })
     } else {
-      cartItems = await app.db.find('cart_items', { cart_id: cartId })
+      cartItems = await app.db.find('cart_items', { cartId })
     }
 
     res.json({ status: 'success', data: cartItems })
@@ -21,10 +21,10 @@ module.exports = (api, app) => {
   api.post('/cart',
     UserMiddleware,
     check('productId').notEmpty().custom(async (value, { req }) => {
-      let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-      if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+      let cartId = (await app.db.findOne('shopping_carts', { userId: req.session.user.id })).id
+      if (!cartId) await app.db.insert('shopping_carts', { userId: req.session.user.id }).then(id => (cartId = id))
 
-      const category = await app.db.findOne('cart_items', { cart_id: cartId, product_id: value })
+      const category = await app.db.findOne('cart_items', { cartId, productId: value })
       if (category) return Promise.reject(new Error('Этот товар уже есть в вашей корзине'))
     }),
     check('quantity').notEmpty(),
@@ -32,12 +32,12 @@ module.exports = (api, app) => {
       const error = validationResult(req)
       if (error) return res.json({ status: 'error', error: error.msg })
 
-      let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-      if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+      let cartId = (await app.db.findOne('shopping_carts', { userId: req.session.user.id })).id
+      if (!cartId) await app.db.insert('shopping_carts', { userId: req.session.user.id }).then(id => (cartId = id))
 
       await app.db.insert('cart_items', {
-        cart_id: cartId,
-        product_id: req.body.productId,
+        cartId,
+        productId: req.body.productId,
         quantity: req.body.quantity
       })
 
@@ -55,10 +55,10 @@ module.exports = (api, app) => {
       const error = validationResult(req)
       if (error) return res.json({ status: 'error', error: error.msg })
 
-      let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-      if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+      let cartId = (await app.db.findOne('shopping_carts', { userId: req.session.user.id })).id
+      if (!cartId) await app.db.insert('shopping_carts', { userId: req.session.user.id }).then(id => (cartId = id))
 
-      const cartItem = await app.db.findOne('cart_items', { cart_id: cartId, product_id: req.params.productId })
+      const cartItem = await app.db.findOne('cart_items', { cartId, productId: req.params.productId })
       if (!cartItem) return res.json({ status: 'error', error: 'Этот товар в корзине не найден' })
 
       await app.db.update('cart_items', cartItem.id, { quantity: req.body.quantity })
@@ -73,10 +73,10 @@ module.exports = (api, app) => {
     const error = validationResult(req)
     if (error) return res.json({ status: 'error', error: error.msg })
 
-    let cartId = (await app.db.findOne('shopping_carts', { user_id: req.session.user.id })).id
-    if (!cartId) await app.db.insert('shopping_carts', { user_id: req.session.user.id }).then(id => (cartId = id))
+    let cartId = (await app.db.findOne('shopping_carts', { userId: req.session.user.id })).id
+    if (!cartId) await app.db.insert('shopping_carts', { userId: req.session.user.id }).then(id => (cartId = id))
 
-    const cartItem = await app.db.findOne('cart_items', { cart_id: cartId, product_id: req.params.productId })
+    const cartItem = await app.db.findOne('cart_items', { cartId, productId: req.params.productId })
     if (!cartItem) return res.json({ status: 'error', error: 'Этот товар в корзине не найден' })
 
     await app.db.delete('cart_items', cartItem.id)

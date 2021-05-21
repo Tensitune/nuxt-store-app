@@ -1,5 +1,8 @@
 const mysql2 = require('mysql2')
 
+const mapKeys = require('lodash.mapkeys')
+const camelCase = require('lodash.camelcase')
+
 class DBConnection {
   constructor() {
     this.db = mysql2.createPool({
@@ -29,6 +32,10 @@ class DBConnection {
     return await new Promise((resolve, reject) => {
       const callback = (err, result) => {
         if (err) return reject(err)
+
+        // Преобразование snake_case ключей в camelCase у объектов строк
+        result = result.map(row => mapKeys(row, (_, k) => camelCase(k)))
+
         resolve(result)
       }
 

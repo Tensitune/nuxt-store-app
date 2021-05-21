@@ -1,28 +1,40 @@
-exports.multipleColumnSet = (object) => {
-  if (typeof object !== 'object') {
+const mapKeys = require('lodash.mapkeys')
+const snakeCase = require('lodash.snakecase')
+
+// Преобразование camelCase ключей в snake_case у объекта
+function camelToSnake(obj) {
+  return mapKeys(obj, (_, k) => snakeCase(k))
+}
+
+exports.multipleColumnSet = (obj) => {
+  if (typeof obj !== 'object') {
     throw new TypeError('Неверный тип параметра, должен быть объект')
   }
 
-  const keys = Object.keys(object)
-  const values = Object.values(object)
+  obj = camelToSnake(obj)
+
+  const keys = Object.keys(obj)
+  const values = Object.values(obj)
 
   const columns = keys.map(key => `${key} = ?`).join(', ')
 
   return { columns, values }
 }
 
-exports.multipleColumnWhere = (object) => {
-  if (typeof object !== 'object') {
+exports.multipleColumnWhere = (obj) => {
+  if (typeof obj !== 'object') {
     throw new TypeError('Неверный тип параметра, должен быть объект')
   }
 
-  const keys = Object.keys(object)
-  let values = Object.values(object)
+  obj = camelToSnake(obj)
+
+  const keys = Object.keys(obj)
+  let values = Object.values(obj)
 
   const columns = keys.map(key => {
-    if (typeof object[key] === 'object') {
-      const tempKeys = Object.keys(object[key])
-      const tempValues = Object.values(object[key])
+    if (typeof obj[key] === 'object') {
+      const tempKeys = Object.keys(obj[key])
+      const tempValues = Object.values(obj[key])
 
       let tempColumns = ''
       for (let i = 0; i < tempKeys.length; i++) {
@@ -50,7 +62,7 @@ exports.multipleColumnWhere = (object) => {
         }
       }
 
-      values = values.filter(value => value !== object[key])
+      values = values.filter(value => value !== obj[key])
       return tempColumns
     }
 

@@ -38,7 +38,7 @@ module.exports = (api, app) => {
 
     for (let i = 0; i < products.length; i++) {
       const product = products[i]
-      const reviews = await app.db.find('reviews', { product_id: product.id })
+      const reviews = await app.db.find('reviews', { productId: product.id })
 
       if (reviews.length) {
         const rating = []
@@ -63,7 +63,7 @@ module.exports = (api, app) => {
 
   api.post('/products',
     AdminMiddleware,
-    check('cat_id').notEmpty().custom(async value => {
+    check('catId').notEmpty().custom(async value => {
       const category = await app.db.findOne('categories', { id: value })
       if (!category) return Promise.reject(new Error('Такой категории не существует'))
     }),
@@ -76,7 +76,7 @@ module.exports = (api, app) => {
       if (error) return res.json({ status: 'error', error: error.msg })
 
       await app.db.insert('products', {
-        cat_id: req.body.cat_id,
+        catId: req.body.catId,
         title: req.body.title,
         description: req.body.description,
         price: req.body.price,
@@ -96,11 +96,11 @@ module.exports = (api, app) => {
 
     const data = {}
 
-    if (req.body.cat_id) {
-      const category = await app.db.findOne('categories', { id: req.body.cat_id })
+    if (req.body.catId) {
+      const category = await app.db.findOne('categories', { id: req.body.catId })
       if (!category) return res.json({ status: 'error', error: 'Такой категории не существует' })
 
-      data.cat_id = req.body.cat_id
+      data.catId = req.body.catId
     }
 
     if (req.body.title) data.title = req.body.title

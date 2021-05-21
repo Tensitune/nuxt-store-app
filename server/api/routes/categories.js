@@ -10,7 +10,7 @@ module.exports = (api, app) => {
   })
 
   api.get('/categories/:categoryId', async (req, res) => {
-    const whereParams = { cat_id: req.params.categoryId }
+    const whereParams = { catId: req.params.categoryId }
 
     if (req.query.title) {
       whereParams.title = { like: req.query.title }

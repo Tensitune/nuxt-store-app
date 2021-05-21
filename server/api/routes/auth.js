@@ -49,7 +49,7 @@ module.exports = (api, app) => {
         phone: req.body.phone ?? '',
         address: req.body.address ?? ''
       }).then(async (userId) => {
-        await app.db.insert('shopping_carts', { user_id: userId })
+        await app.db.insert('shopping_carts', { userId })
 
         const user = await app.db.findOne('users', { id: userId })
         if (user) {
