@@ -31,11 +31,11 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" text @click="dialog = false">
-          Закрыть
-        </v-btn>
         <v-btn color="blue darken-1" text @click="signIn">
           Войти
+        </v-btn>
+        <v-btn color="blue darken-1" text @click="dialog = false">
+          Закрыть
         </v-btn>
       </v-card-actions>
     </v-card>

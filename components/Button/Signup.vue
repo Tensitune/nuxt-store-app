@@ -49,11 +49,11 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="blue darken-1" text @click="dialog = false; loading = false;">
-            Закрыть
-          </v-btn>
           <v-btn color="blue darken-1" type="submit" :loading="loading" text @click.prevent="signUp">
             Регистрация
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="dialog = false; loading = false;">
+            Закрыть
           </v-btn>
         </v-card-actions>
       </v-card>
