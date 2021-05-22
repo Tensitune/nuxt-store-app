@@ -1,13 +1,16 @@
 const express = require("express");
 const api = express.Router();
 
+const fs = require("fs");
+const { join } = require("path");
+
+const path = join(__dirname, `/routes`);
+const routes = fs.readdirSync(path).filter(file => file.endsWith(".js"));
+
 module.exports = app => {
-  require("./routes/auth")(api, app);
-  require("./routes/cart")(api, app);
-  require("./routes/categories")(api, app);
-  require("./routes/products")(api, app);
-  require("./routes/reviews")(api, app);
-  require("./routes/users")(api, app);
+  for (const route of routes) {
+    require(path + `/${route}`)(api, app);
+  }
 
   app.use("/api", api);
 };
