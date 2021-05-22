@@ -14,13 +14,19 @@
         <v-card-text>
           <v-row>
             <v-col cols="12">
-              <v-text-field v-model="signupData.username" label="Имя пользователя*" counter="25" :rules="requiredRules" required />
+              <v-text-field
+                v-model="signupData.username"
+                label="Имя пользователя*"
+                counter="25"
+                :rules="[requiredRules, v => (v && v.length <= 25) || 'Длина имени пользователя должна быть не больше 25 символов.']"
+                required
+              />
             </v-col>
             <v-col cols="12">
               <v-text-field
                 v-model="signupData.password"
                 :append-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-                :rules="requiredRules"
+                :rules="[requiredRules, v => (v && v.length > 3) || 'Длина пароля должна быть больше 3 символов.']"
                 :type="passwordVisible ? '' : 'password'"
                 label="Пароль*"
                 required
@@ -28,19 +34,43 @@
               />
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="passwordConfirm" label="Подтвержение пароля*" :rules="requiredRules" :type="passwordVisible ? '' : 'password'" required />
+              <v-text-field v-model="passwordConfirm" label="Подтвержение пароля*" :rules="[requiredRules]" :type="passwordVisible ? '' : 'password'" required />
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-text-field v-model="signupData.firstname" label="Имя*" counter="25" :rules="requiredRules" required />
+              <v-text-field
+                v-model="signupData.firstname"
+                label="Имя*"
+                counter="25"
+                :rules="[requiredRules, v => (v && v.length <= 25) || 'Длина имени должна быть не больше 25 символов.']"
+                required
+              />
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-text-field v-model="signupData.lastname" label="Фамилия*" counter="25" :rules="requiredRules" required />
+              <v-text-field
+                v-model="signupData.lastname"
+                label="Фамилия*"
+                counter="25"
+                :rules="[requiredRules, v => (v && v.length <= 25) || 'Длина фамилии должна быть не больше 25 символов.']"
+                required
+              />
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="signupData.phone" label="Телефон" counter="16" />
+              <v-text-field
+                v-model="signupData.phone"
+                label="Телефон"
+                placeholder="+7(123)45-67-890"
+                type="phone"
+                counter="16"
+                :rules="[v => (v && v.length <= 16) || 'Длина номера телефона должна быть не больше 16 символов.']"
+              />
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="signupData.address" label="Адрес" counter="255" />
+              <v-text-field
+                v-model="signupData.address"
+                label="Адрес"
+                counter="255"
+                :rules="[v => (v && v.length <= 255) || 'Длина адреса должна быть не больше 255 символов.']"
+              />
             </v-col>
           </v-row>
           <h3 v-if="error" class="red--text">{{ error }}</h3>
@@ -78,9 +108,7 @@ export default {
       address: ""
     },
     passwordConfirm: "",
-    requiredRules: [
-      v => !!v || "Это поле обязательно для заполнения"
-    ]
+    requiredRules: v => !!v || "Это поле обязательно для заполнения"
   }),
   methods: {
     signUp() {
