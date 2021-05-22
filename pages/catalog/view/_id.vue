@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-sheet color="mt-9 mb-6" elevation="4" rounded="lg">
-      <v-row class="pa-4">
+    <v-sheet class="pa-4 my-6" elevation="4" rounded="lg">
+      <v-row align="center">
         <v-col cols="4">
           <v-img :src="product.thumbnail" height="256" contain />
         </v-col>
@@ -31,42 +31,40 @@
       </v-row>
     </v-sheet>
 
-    <v-sheet v-if="user" class="mb-6" elevation="4" rounded="lg">
+    <v-sheet v-if="user" class="pa-4 mb-6" elevation="4" rounded="lg">
       <v-form>
-        <v-container>
-          <div class="title">{{ userReview ? "Ваш отзыв" : "Написать отзыв" }}</div>
-          <v-row>
-            <v-col class="pa-0" cols="12">
-              <v-rating
-                v-model="reviewRating"
-                color="amber"
-                empty-icon="mdi-star-outline"
-                full-icon="mdi-star"
-                half-icon="mdi-star-half-full"
-                half-increments
-                hover
-                length="5"
-                size="48"
-              />
-            </v-col>
-            <v-col class="py-0" cols="12">
-              <v-textarea v-model="reviewText" outlined auto-grow label="Комментарий" />
-            </v-col>
-          </v-row>
+        <div class="title">{{ userReview ? "Ваш отзыв" : "Написать отзыв" }}</div>
+        <v-row>
+          <v-col class="pa-0" cols="12">
+            <v-rating
+              v-model="reviewRating"
+              color="amber"
+              empty-icon="mdi-star-outline"
+              full-icon="mdi-star"
+              half-icon="mdi-star-half-full"
+              half-increments
+              hover
+              length="5"
+              size="48"
+            />
+          </v-col>
+          <v-col class="py-0" cols="12">
+            <v-textarea v-model="reviewText" outlined auto-grow label="Комментарий" />
+          </v-col>
+        </v-row>
 
-          <div class="d-flex justify-end">
-            <v-btn color="deep-purple lighten-2 white--text" rounded @click="writeReview">
-              {{ userReview ? "Изменить отзыв" : "Написать отзыв" }}
-            </v-btn>
-            <v-btn v-if="userReview" color="red lighten-1 white--text ml-1" rounded @click="deleteReview">
-              Удалить отзыв
-            </v-btn>
-          </div>
-        </v-container>
+        <div class="d-flex justify-end">
+          <v-btn color="deep-purple lighten-2 white--text" rounded @click="writeReview">
+            {{ userReview ? "Изменить отзыв" : "Написать отзыв" }}
+          </v-btn>
+          <v-btn v-if="userReview" color="red lighten-1 white--text ml-1" rounded @click="deleteReview">
+            Удалить отзыв
+          </v-btn>
+        </div>
       </v-form>
     </v-sheet>
 
-    <v-sheet v-if="reviews.length" class="pa-4" elevation="4" rounded="lg">
+    <v-sheet v-if="reviews.length" class="pa-4 mb-3" elevation="4" rounded="lg">
       <div class="title mb-4">Отзывы</div>
 
       <Pagination :count="reviews.length" :limit="perPage" @onPageChange="onPageChange">
