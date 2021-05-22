@@ -37,6 +37,7 @@
               />
             </v-col>
           </v-row>
+          <h3 v-if="error" class="red--text">{{ error }}</h3>
         </v-card-text>
 
         <v-card-actions>
@@ -59,6 +60,7 @@ export default {
     valid: true,
     dialog: false,
     loading: false,
+    error: "",
     feedback: {
       email: "",
       text: ""
