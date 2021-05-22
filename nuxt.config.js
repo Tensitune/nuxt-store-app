@@ -1,4 +1,4 @@
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = process.env.NODE_ENV !== "production";
 
 export default {
   /*
@@ -8,35 +8,35 @@ export default {
   ssr: true,
 
   ...(!isDev && {
-    modern: 'client'
+    modern: "client"
   }),
 
   /*
   ** Nuxt target
   ** See https://nuxtjs.org/api/configuration-target
   */
-  target: 'server',
+  target: "server",
 
   /*
   ** Headers of the page
   ** See https://nuxtjs.org/api/configuration-head
   */
   head: {
-    title: process.env.npm_package_name || '',
+    title: process.env.npm_package_name || "",
     meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      { charset: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { hid: "description", name: "description", content: process.env.npm_package_description || "" }
     ],
     link: [
-      { rel: 'shortcut icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: "shortcut icon", type: "image/x-icon", href: "/favicon.ico" }
     ]
   },
 
   /*
   ** Global CSS
   */
-  css: ['~/assets/style.scss'],
+  css: ["~/assets/style.scss"],
 
   /*
   ** Plugins to load before mounting the App
@@ -54,22 +54,22 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    '@nuxtjs/eslint-module'
+    "@nuxtjs/eslint-module"
   ],
 
   /*
   ** Nuxt.js modules
   */
   modules: [
-    '@nuxt/http', // Doc: https://http.nuxtjs.org
-    '@nuxtjs/axios',
-    '@nuxtjs/vuetify'
+    "@nuxt/http", // Doc: https://http.nuxtjs.org
+    "@nuxtjs/axios",
+    "@nuxtjs/vuetify"
   ],
 
   /*
   ** Server Middleware
   */
-  serverMiddleware: ['~/server'],
+  serverMiddleware: ["~/server"],
 
   router: {
     prefetchLinks: false
@@ -80,7 +80,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'http://localhost:3000/api',
+    baseURL: "http://localhost:3000/api",
     proxyHeaders: false,
     credentials: false
   },
@@ -108,15 +108,15 @@ export default {
   build: {
     optimizeCss: false,
     babel: {
-      plugins: [['@babel/plugin-proposal-private-methods', { loose: true }]]
+      plugins: [["@babel/plugin-proposal-private-methods", { loose: true }]]
     },
     filenames: {
-      app: ({ isDev }) => isDev ? '[name].js' : 'js/[contenthash].js',
-      chunk: ({ isDev }) => isDev ? '[name].js' : 'js/[contenthash].js',
-      css: ({ isDev }) => isDev ? '[name].css' : 'css/[contenthash].css',
-      img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[contenthash:7].[ext]',
-      font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[contenthash:7].[ext]',
-      video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[contenthash:7].[ext]'
+      app: ({ isDev }) => isDev ? "[name].js" : "js/[contenthash].js",
+      chunk: ({ isDev }) => isDev ? "[name].js" : "js/[contenthash].js",
+      css: ({ isDev }) => isDev ? "[name].css" : "css/[contenthash].css",
+      img: ({ isDev }) => isDev ? "[path][name].[ext]" : "img/[contenthash:7].[ext]",
+      font: ({ isDev }) => isDev ? "[path][name].[ext]" : "fonts/[contenthash:7].[ext]",
+      video: ({ isDev }) => isDev ? "[path][name].[ext]" : "videos/[contenthash:7].[ext]"
     },
     ...(!isDev && {
       html: {
@@ -146,12 +146,12 @@ export default {
         ignoreOrder: true
       }
     }),
-    transpile: ['vue-lazy-hydration', 'intersection-observer'],
+    transpile: ["vue-lazy-hydration", "intersection-observer"],
     postcss: {
       plugins: {
         ...(!isDev && {
           cssnano: {
-            preset: ['advanced', {
+            preset: ["advanced", {
               autoprefixer: false,
               cssDeclarationSorter: false,
               zindex: false,
@@ -164,12 +164,12 @@ export default {
       },
       ...(!isDev && {
         preset: {
-          browsers: 'cover 99.5%',
+          browsers: "cover 99.5%",
           autoprefixer: true
         }
       }),
 
-      order: 'cssnanoLast'
+      order: "cssnanoLast"
     }
   }
-}
+};

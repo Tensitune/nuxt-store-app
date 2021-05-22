@@ -97,12 +97,12 @@
 <script>
 export default {
   async asyncData({ $axios }) {
-    const categories = (await $axios.$get('/categories')).data ?? []
+    const categories = (await $axios.$get("/categories")).data ?? [];
 
-    const productsCount = (await $axios.$get('/products')).data ?? 0
-    const products = (await $axios.$get('/products?page=1&perPage=6&orderBy=price')).data ?? []
+    const productsCount = (await $axios.$get("/products")).data ?? 0;
+    const products = (await $axios.$get("/products?page=1&perPage=6&orderBy=price")).data ?? [];
 
-    return { categories, productsCount, products }
+    return { categories, productsCount, products };
   },
   data: () => ({
     menu: false,
@@ -110,75 +110,75 @@ export default {
     productsCount: 0,
     perPage: 6,
     activeCategory: 0,
-    search: '',
-    sort: 'Сначала недорогие',
-    sortItems: ['Сначала недорогие', 'Сначала дорогие', 'По наименованию'],
+    search: "",
+    sort: "Сначала недорогие",
+    sortItems: ["Сначала недорогие", "Сначала дорогие", "По наименованию"],
     sliderRange: [1, 999999],
     categories: [],
     products: [],
     order: {
-      by: 'price',
+      by: "price",
       desc: false
     }
   }),
   async fetch() {
-    this.loading = true
+    this.loading = true;
 
-    const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : '/products'
-    this.productsCount = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&priceFrom=' + this.sliderRange[0] +
-      '&priceTo=' + this.sliderRange[1])).data ?? 0
-    this.products = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&page=1&perPage=' + this.perPage + '&priceFrom=' +
-      this.sliderRange[0] + '&priceTo=' + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? []
+    const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : "/products";
+    this.productsCount = (await this.$axios.$get(productsUrl + "?title=" + this.searchText + "&priceFrom=" + this.sliderRange[0] +
+      "&priceTo=" + this.sliderRange[1])).data ?? 0;
+    this.products = (await this.$axios.$get(productsUrl + "?title=" + this.searchText + "&page=1&perPage=" + this.perPage + "&priceFrom=" +
+      this.sliderRange[0] + "&priceTo=" + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? [];
 
-    this.loading = false
+    this.loading = false;
   },
   computed: {
     categoryTitle() {
-      const tempCategories = [{ id: 0, title: 'Все товары' }, ...this.categories]
-      const category = tempCategories.filter(cat => cat.id === (this.categoryFilter))[0]
-      return category.title ?? 'Категории'
+      const tempCategories = [{ id: 0, title: "Все товары" }, ...this.categories];
+      const category = tempCategories.filter(cat => cat.id === (this.categoryFilter))[0];
+      return category.title ?? "Категории";
     },
     categoryFilter() {
-      return this.activeCategory ?? 0
+      return this.activeCategory ?? 0;
     },
     searchText() {
-      return this.search ?? ''
+      return this.search ?? "";
     }
   },
   watch: {
-    activeCategory: async function () {
-      await this.$fetch()
+    async activeCategory () {
+      await this.$fetch();
     },
-    sliderRange: async function() {
-      await this.$fetch()
+    async sliderRange() {
+      await this.$fetch();
     },
-    sort: async function(val) {
+    async sort(val) {
       switch (val) {
-        case 'Сначала недорогие':
-          this.order.by = 'price'
-          this.order.desc = false
-          break
-        case 'Сначала дорогие':
-          this.order.by = 'price'
-          this.order.desc = true
-          break
-        case 'По наименованию':
-          this.order.by = 'title'
-          this.order.desc = false
-          break
+        case "Сначала недорогие":
+          this.order.by = "price";
+          this.order.desc = false;
+          break;
+        case "Сначала дорогие":
+          this.order.by = "price";
+          this.order.desc = true;
+          break;
+        case "По наименованию":
+          this.order.by = "title";
+          this.order.desc = false;
+          break;
         default:
-          break
+          break;
       }
 
-      await this.$fetch()
+      await this.$fetch();
     }
   },
   methods: {
     async onPageChange(page) {
-      const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : '/products'
-      this.products = (await this.$axios.$get(productsUrl + '?title=' + this.searchText + '&page=' + page + '&perPage=' + this.perPage +
-        '&priceFrom=' + this.sliderRange[0] + '&priceTo=' + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? []
+      const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : "/products";
+      this.products = (await this.$axios.$get(productsUrl + "?title=" + this.searchText + "&page=" + page + "&perPage=" + this.perPage +
+        "&priceFrom=" + this.sliderRange[0] + "&priceTo=" + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? [];
     }
   }
-}
+};
 </script>

@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   props: {
@@ -47,19 +47,19 @@ export default {
     },
     width: {
       type: String,
-      default: 'auto'
+      default: "auto"
     },
     height: {
       type: String,
-      default: 'auto'
+      default: "auto"
     },
     maxWidth: {
       type: String,
-      default: 'auto'
+      default: "auto"
     },
     maxHeight: {
       type: String,
-      default: 'auto'
+      default: "auto"
     }
   },
   data: () => ({
@@ -72,15 +72,15 @@ export default {
     })
   },
   async mounted() {
-    this.reviewUser = (await this.$axios.$get(`/users/${this.review.userId}`)).data
+    this.reviewUser = (await this.$axios.$get(`/users/${this.review.userId}`)).data;
   },
   methods: {
     async deleteReview() {
-      await this.$axios.$delete(`/reviews/${this.review.id}`)
-      this.dialog = false
+      await this.$axios.$delete(`/reviews/${this.review.id}`);
+      this.dialog = false;
 
-      this.$emit('onReviewDelete')
+      this.$emit("onReviewDelete");
     }
   }
-}
+};
 </script>

@@ -115,41 +115,41 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   data: () => ({
-    title: 'Nuxt Store',
+    title: "Nuxt Store",
     clipped: true,
     drawer: false,
     fixed: true,
     items: [
       {
-        icon: 'mdi-home-outline',
-        title: 'Главная',
-        to: '/'
+        icon: "mdi-home-outline",
+        title: "Главная",
+        to: "/"
       },
       {
-        icon: 'mdi-archive-outline',
-        title: 'Каталог',
-        to: '/catalog'
+        icon: "mdi-archive-outline",
+        title: "Каталог",
+        to: "/catalog"
       },
       {
-        icon: 'mdi-shopping-outline',
-        title: 'Магазины',
-        to: '/shops'
+        icon: "mdi-shopping-outline",
+        title: "Магазины",
+        to: "/shops"
       },
       {
-        icon: 'mdi-email-outline',
-        title: 'Обратная связь',
-        to: '/feedback'
+        icon: "mdi-email-outline",
+        title: "Обратная связь",
+        to: "/feedback"
       }
     ],
     footerIcons: [
-      { icon: 'mdi-discord', uri: 'https://discord.gg/ETrKUWmCN4' },
-      { icon: 'mdi-twitter', uri: 'https://twitter.com' },
-      { icon: 'mdi-vk', uri: 'https://vk.com' },
-      { icon: 'mdi-instagram', uri: 'https://www.instagram.com' }
+      { icon: "mdi-discord", uri: "https://discord.gg/ETrKUWmCN4" },
+      { icon: "mdi-twitter", uri: "https://twitter.com" },
+      { icon: "mdi-vk", uri: "https://vk.com" },
+      { icon: "mdi-instagram", uri: "https://www.instagram.com" }
     ]
   }),
   computed: {
@@ -158,22 +158,22 @@ export default {
       cartItems: state => state.userCart
     }),
     showDrawer() {
-      const disabledSizes = ['xs', 'sm', 'md']
-      if (disabledSizes.includes(this.$vuetify.breakpoint.name)) return false
-      return true
+      const disabledSizes = ["xs", "sm", "md"];
+      if (disabledSizes.includes(this.$vuetify.breakpoint.name)) return false;
+      return true;
     }
   },
   async mounted() {
-    const getCartItems = (await this.$axios.get('/cart')).data
-    if (getCartItems.status === 'error') return
+    const getCartItems = (await this.$axios.get("/cart")).data;
+    if (getCartItems.status === "error") return;
 
-    this.$store.commit('SET_CART', getCartItems.data)
+    this.$store.commit("SET_CART", getCartItems.data);
   },
   methods: {
     async signOut() {
-      await this.$axios.$get('/auth/signout')
-      window.location.reload()
+      await this.$axios.$get("/auth/signout");
+      window.location.reload();
     }
   }
-}
+};
 </script>

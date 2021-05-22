@@ -12,7 +12,7 @@
             <div class="d-flex flex-row align-center">
               <v-rating :value="ratingValue" color="amber" dense half-increments readonly size="24" />
               <h3 class="mx-1">
-                {{ reviews.length ? `${rating}` : 'Нет отзывов' }}
+                {{ reviews.length ? `${rating}` : "Нет отзывов" }}
               </h3>
               <h4 v-if="reviews.length" class="grey--text">({{ reviewsText }})</h4>
             </div>
@@ -34,7 +34,7 @@
     <v-sheet v-if="user" class="mb-6" elevation="4" rounded="lg">
       <v-form>
         <v-container>
-          <div class="title">{{ userReview ? 'Ваш отзыв' : 'Написать отзыв' }}</div>
+          <div class="title">{{ userReview ? "Ваш отзыв" : "Написать отзыв" }}</div>
           <v-row>
             <v-col class="pa-0" cols="12">
               <v-rating
@@ -56,7 +56,7 @@
 
           <div class="d-flex justify-end">
             <v-btn color="deep-purple lighten-2 white--text" rounded @click="writeReview">
-              {{ userReview ? 'Изменить отзыв' : 'Написать отзыв' }}
+              {{ userReview ? "Изменить отзыв" : "Написать отзыв" }}
             </v-btn>
             <v-btn v-if="userReview" color="red lighten-1 white--text ml-1" rounded @click="deleteReview">
               Удалить отзыв
@@ -91,15 +91,15 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   async asyncData({ params, error, $axios }) {
-    const product = (await $axios.$get(`/products/${params.id}`)).data
-    if (!product) return error({ statusCode: 404, message: 'Товар не найден' })
+    const product = (await $axios.$get(`/products/${params.id}`)).data;
+    if (!product) return error({ statusCode: 404, message: "Товар не найден" });
 
-    const reviews = (await $axios.$get(`/reviews/${params.id}?getAll=true`)).data
-    return { product, reviews }
+    const reviews = (await $axios.$get(`/reviews/${params.id}?getAll=true`)).data;
+    return { product, reviews };
   },
   data: () => ({
     snackbar: false,
@@ -107,102 +107,102 @@ export default {
     perPage: 9,
     reviewRating: 3,
     snackbarTimeout: 2000,
-    snackbarText: '',
-    reviewText: '',
+    snackbarText: "",
+    reviewText: "",
     product: {},
     reviews: []
   }),
   async fetch() {
-    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data
+    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data;
   },
   computed: {
     ...mapState({
       user: state => state.user
     }),
     userReview() {
-      if (!this.user) return false
-      const review = this.reviews.filter(review => review.userId === this.user.id)
-      return review[0] ?? false
+      if (!this.user) return false;
+      const review = this.reviews.filter(review => review.userId === this.user.id);
+      return review[0] ?? false;
     },
     paginationReviews() {
-      return this.reviews.filter(review => (review.id !== this.userReview.id)).slice(this.page - 1, this.page * this.perPage)
+      return this.reviews.filter(review => (review.id !== this.userReview.id)).slice(this.page - 1, this.page * this.perPage);
     },
     rating() {
-      let rating = []
+      let rating = [];
 
       if (this.reviews.length) {
-        this.reviews.map(review => rating.push(review.rating))
-        rating = (rating.reduce((a, b) => a + b) / rating.length).toFixed(1)
+        this.reviews.map(review => rating.push(review.rating));
+        rating = (rating.reduce((a, b) => a + b) / rating.length).toFixed(1);
       }
 
-      return rating
+      return rating;
     },
     ratingValue() {
-      const value = (Math.round(this.rating * 2) / 2).toFixed(1)
-      return parseFloat(value)
+      const value = (Math.round(this.rating * 2) / 2).toFixed(1);
+      return parseFloat(value);
     },
     reviewsText() {
-      let text = this.reviews.length.toString()
-      const lastNumber = parseInt(text.slice(-1))
+      let text = this.reviews.length.toString();
+      const lastNumber = parseInt(text.slice(-1));
 
-      if (lastNumber === 1) text += ' отзыв'
-      else if ([2, 3, 4].includes(lastNumber)) text += ' отзыва'
-      else text += ' отзывов'
+      if (lastNumber === 1) text += " отзыв";
+      else if ([2, 3, 4].includes(lastNumber)) text += " отзыва";
+      else text += " отзывов";
 
-      return text
+      return text;
     },
     price() {
-      return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(this.product.price)
+      return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB" }).format(this.product.price);
     }
   },
   mounted() {
-    if (!this.userReview) return
-    this.reviewRating = this.userReview.rating
-    this.reviewText = this.userReview.text
+    if (!this.userReview) return;
+    this.reviewRating = this.userReview.rating;
+    this.reviewText = this.userReview.text;
   },
   methods: {
     onPageChange(page) {
-      this.page = page
+      this.page = page;
     },
     async onReviewDelete() {
-      await this.$fetch()
+      await this.$fetch();
     },
     async writeReview() {
       if (this.userReview) {
-        if (this.userReview.text === this.reviewText && this.userReview.rating === this.reviewRating) return
-        this.snackbar = false
+        if (this.userReview.text === this.reviewText && this.userReview.rating === this.reviewRating) return;
+        this.snackbar = false;
 
         await this.$axios.$put(`/reviews/${this.userReview.id}`, {
           rating: this.reviewRating,
           text: this.reviewText
-        })
-        await this.$fetch()
+        });
+        await this.$fetch();
 
-        this.snackbar = true
-        this.snackbarText = 'Отзыв успешно изменён!'
+        this.snackbar = true;
+        this.snackbarText = "Отзыв успешно изменён!";
       } else {
         await this.$axios.$post(`/reviews/${this.product.id}`, {
           rating: this.reviewRating,
           text: this.reviewText
-        })
-        await this.$fetch()
+        });
+        await this.$fetch();
 
-        this.snackbar = true
-        this.snackbarText = 'Отзыв успешно добавлен!'
+        this.snackbar = true;
+        this.snackbarText = "Отзыв успешно добавлен!";
       }
     },
     async deleteReview() {
-      this.snackbar = false
+      this.snackbar = false;
 
-      await this.$axios.$delete(`/reviews/${this.userReview.id}`)
-      await this.$fetch()
+      await this.$axios.$delete(`/reviews/${this.userReview.id}`);
+      await this.$fetch();
 
-      this.snackbar = true
-      this.snackbarText = 'Отзыв успешно удалён!'
+      this.snackbar = true;
+      this.snackbarText = "Отзыв успешно удалён!";
 
-      this.reviewRating = 0
-      this.reviewText = ''
+      this.reviewRating = 0;
+      this.reviewText = "";
     }
   }
-}
+};
 </script>

@@ -1,2 +1,2 @@
-exports.UserMiddleware = require('./UserMiddleware')
-exports.AdminMiddleware = require('./AdminMiddleware')
+exports.UserMiddleware = require("./UserMiddleware");
+exports.AdminMiddleware = require("./AdminMiddleware");

@@ -24,9 +24,9 @@ export default {
     page: 1
   }),
   watch: {
-    page: function(newPage) {
-      this.$emit('onPageChange', newPage)
+    page(newPage) {
+      this.$emit("onPageChange", newPage);
     }
   }
-}
+};
 </script>

@@ -1,6 +1,6 @@
 module.exports = (api, app) => {
-  api.get('/users/:userId', async (req, res) => {
-    const user = await app.db.findOne('users', { id: req.params.userId })
+  api.get("/users/:userId", async (req, res) => {
+    const user = await app.db.findOne("users", { id: req.params.userId });
 
     const data = {
       id: user.id,
@@ -8,8 +8,8 @@ module.exports = (api, app) => {
       firstname: user.firstname,
       lastname: user.lastname,
       admin: user.admin
-    }
+    };
 
-    res.json({ status: 'success', data })
-  })
-}
+    res.json({ status: "success", data });
+  });
+};

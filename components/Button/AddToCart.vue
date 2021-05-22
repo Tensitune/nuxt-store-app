@@ -19,7 +19,7 @@
               <v-col cols="12">
                 <v-text-field
                   v-model="quantity"
-                  :rules="[...requiredRules, ...numberRules, v => (v && v.length <= 9) || 'Длина не должна превышать 9 цифр.']"
+                  :rules="[rules.required, ...rules.number, v => (v && v.length <= 9) || 'Длина не должна превышать 9 цифр.']"
                   counter="9"
                   label="Количество"
                   type="number"
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   props: {
@@ -58,59 +58,59 @@ export default {
     valid: true,
     dialog: false,
     quantity: 0,
-    error: '',
-    requiredRules: [
-      v => !!v || 'Это поле обязательно для заполнения'
-    ],
-    numberRules: [
-      v => !(/-\D/.test(v)) || 'Только цифры',
-      v => v > 0 || 'Число должно быть больше 0'
-    ]
+    error: "",
+    rules: {
+      required: v => !!v || "Это поле обязательно для заполнения",
+      number: [
+        v => !(/-\D/.test(v)) || "Только цифры",
+        v => v > 0 || "Число должно быть больше 0"
+      ]
+    }
   }),
   computed: {
     ...mapState({
       cartItems: state => state.userCart
     }),
     inShoppingCart() {
-      if (!this.cartItems) return false
+      if (!this.cartItems) return false;
 
-      const product = this.cartItems.filter(product => product.id === this.productId)[0]
-      if (product) return true
+      const product = this.cartItems.filter(product => product.id === this.productId)[0];
+      if (product) return true;
 
-      return false
+      return false;
     }
   },
   methods: {
     addToShoppingCart() {
-      this.loading = true
+      this.loading = true;
 
-      const isValid = this.$refs.form.validate()
+      const isValid = this.$refs.form.validate();
       if (isValid) {
-        this.$axios.$post('/cart', {
+        this.$axios.$post("/cart", {
           productId: this.productId,
           quantity: this.quantity
         }).then(res => {
-          this.loading = false
+          this.loading = false;
 
-          if (res.status === 'error') {
-            this.error = res.error
-            return
+          if (res.status === "error") {
+            this.error = res.error;
+            return;
           }
 
-          this.$refs.form.reset()
-          this.disabled = true
-          this.dialog = false
+          this.$refs.form.reset();
+          this.disabled = true;
+          this.dialog = false;
         }).catch(err => {
-          console.log(err)
-          this.loading = false
-          this.error = 'Что-то пошло не так'
-        })
+          console.log(err);
+          this.loading = false;
+          this.error = "Что-то пошло не так";
+        });
 
-        return
+        return;
       }
 
-      this.loading = false
+      this.loading = false;
     }
   }
-}
+};
 </script>

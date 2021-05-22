@@ -14,7 +14,7 @@
       <v-row align="center" class="pl-2">
         <v-rating :value="ratingValue" color="amber" dense half-increments readonly size="14" />
         <div class="grey--text ml-1">
-          {{ reviews.length ? `${rating} (${reviews.length})` : 'Нет отзывов' }}
+          {{ reviews.length ? `${rating} (${reviews.length})` : "Нет отзывов" }}
         </div>
       </v-row>
 
@@ -22,7 +22,7 @@
       <div class="text-truncate">{{ product.description }}</div>
 
       <strong :class="product.stock > 0 ? 'green--text' : 'orange--text'">
-        {{ product.stock > 0 ? `${product.stock} в наличии` : 'Нет в наличии' }}
+        {{ product.stock > 0 ? `${product.stock} в наличии` : "Нет в наличии" }}
       </strong>
     </v-card-text>
 
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
   props: {
@@ -45,48 +45,48 @@ export default {
     },
     width: {
       type: String,
-      default: 'auto'
+      default: "auto"
     },
     height: {
       type: String,
-      default: 'auto'
+      default: "auto"
     },
     maxWidth: {
       type: String,
-      default: 'auto'
+      default: "auto"
     },
     maxHeight: {
       type: String,
-      default: 'auto'
+      default: "auto"
     }
   },
   data: () => ({
     reviews: []
   }),
   async fetch() {
-    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data
+    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data;
   },
   computed: {
     ...mapState({
       user: state => state.user
     }),
     rating() {
-      let rating = []
+      let rating = [];
 
       if (this.reviews.length) {
-        this.reviews.map(review => rating.push(review.rating))
-        rating = (rating.reduce((a, b) => a + b) / rating.length).toFixed(1)
+        this.reviews.map(review => rating.push(review.rating));
+        rating = (rating.reduce((a, b) => a + b) / rating.length).toFixed(1);
       }
 
-      return rating
+      return rating;
     },
     ratingValue() {
-      const value = (Math.round(this.rating * 2) / 2).toFixed(1)
-      return parseFloat(value)
+      const value = (Math.round(this.rating * 2) / 2).toFixed(1);
+      return parseFloat(value);
     },
     price() {
-      return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(this.product.price)
+      return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB" }).format(this.product.price);
     }
   }
-}
+};
 </script>

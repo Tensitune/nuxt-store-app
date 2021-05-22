@@ -9,26 +9,26 @@
       <v-card-title>
         <span class="headline">Войти</span>
       </v-card-title>
+
       <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <v-text-field v-model="signinData.username" label="Логин" required />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-model="signinData.password"
-                :append-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
-                :type="passwordVisible ? '' : 'password'"
-                label="Пароль"
-                required
-                @click:append="passwordVisible = !passwordVisible"
-              />
-            </v-col>
-          </v-row>
-        </v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field v-model="signinData.username" label="Логин" required />
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="signinData.password"
+              :append-icon="passwordVisible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="passwordVisible ? '' : 'password'"
+              label="Пароль"
+              required
+              @click:append="passwordVisible = !passwordVisible"
+            />
+          </v-col>
+        </v-row>
         <h3 v-if="error" class="red--text">{{ error }}</h3>
       </v-card-text>
+
       <v-card-actions>
         <v-spacer />
         <v-btn color="blue darken-1" text @click="signIn">
@@ -46,27 +46,27 @@
 export default {
   data: () => ({
     dialog: false,
-    error: '',
+    error: "",
     passwordVisible: false,
     signinData: {
-      username: '',
-      password: ''
+      username: "",
+      password: ""
     }
   }),
   methods: {
     signIn() {
-      this.$axios.$post('/auth/signin', this.signinData).then(res => {
-        if (res.status === 'error') {
-          this.error = res.error
-          return
+      this.$axios.$post("/auth/signin", this.signinData).then(res => {
+        if (res.status === "error") {
+          this.error = res.error;
+          return;
         }
 
-        window.location.reload()
+        window.location.reload();
       }).catch(err => {
-        console.log(err)
-        this.error = 'Что-то пошло не так'
-      })
+        console.log(err);
+        this.error = "Что-то пошло не так";
+      });
     }
   }
-}
+};
 </script>
