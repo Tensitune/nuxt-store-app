@@ -8,11 +8,11 @@ module.exports = (api, app) => {
     let cartId = (await app.db.findOne("shopping_carts", { userId: req.session.user.id })).id;
     if (!cartId) await app.db.insert("shopping_carts", { userId: req.session.user.id }).then(id => (cartId = id));
 
-    let cartItems = [];
-    if (req.query.count) {
-      cartItems = await app.db.count("cart_items", { cartId });
-    } else {
-      cartItems = await app.db.find("cart_items", { cartId });
+    const cartItems = await app.db.find("cart_items", { cartId });
+    for (let i = 0; i < cartItems.length; i++) {
+      const quantity = cartItems[i].quantity;
+      cartItems[i] = await app.db.findOne("products", { id: cartItems[i].productId });
+      cartItems[i] = { ...cartItems[i], quantity };
     }
 
     res.json({ status: "success", data: cartItems });
