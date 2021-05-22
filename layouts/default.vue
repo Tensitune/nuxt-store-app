@@ -90,6 +90,19 @@
 
     <v-main>
       <Nuxt />
+
+      <v-snackbar v-model="snackbar.enabled" :timeout="snackbar.timeout" :color="snackbar.color" rounded="lg">
+        <v-row align="center">
+          <v-icon class="mx-1">{{ snackbar.icon }}</v-icon>
+          <h3>{{ snackbar.text }}</h3>
+        </v-row>
+
+        <template #action="{ attrs }">
+          <v-btn color="white" icon v-bind="attrs" @click="snackbar.enabled = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-main>
 
     <v-footer dark :absolute="!fixed" padless>
@@ -123,6 +136,13 @@ export default {
     clipped: true,
     drawer: false,
     fixed: true,
+    snackbar: {
+      enabled: false,
+      timeout: 3000,
+      color: "green",
+      icon: "mdi-information",
+      text: ""
+    },
     items: [
       {
         icon: "mdi-home-outline",
@@ -162,6 +182,14 @@ export default {
       if (disabledSizes.includes(this.$vuetify.breakpoint.name)) return false;
       return true;
     }
+  },
+  created () {
+    this.$nuxt.$on("snackbarCall", (text, color = "green", icon = "mdi-check") => {
+      this.snackbar.enabled = true;
+      this.snackbar.text = text;
+      this.snackbar.color = color;
+      this.snackbar.icon = icon;
+    });
   },
   async mounted() {
     const getCartItems = (await this.$axios.get("/cart")).data;

@@ -64,16 +64,6 @@
           </div>
         </v-container>
       </v-form>
-
-      <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" color="green">
-        {{ snackbarText }}
-
-        <template #action="{ attrs }">
-          <v-btn color="white" icon v-bind="attrs" @click="snackbar = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </template>
-      </v-snackbar>
     </v-sheet>
 
     <v-sheet v-if="reviews.length" class="pa-4" elevation="4" rounded="lg">
@@ -102,12 +92,9 @@ export default {
     return { product, reviews };
   },
   data: () => ({
-    snackbar: false,
     page: 1,
     perPage: 9,
     reviewRating: 3,
-    snackbarTimeout: 2000,
-    snackbarText: "",
     reviewText: "",
     product: {},
     reviews: []
@@ -170,7 +157,6 @@ export default {
     async writeReview() {
       if (this.userReview) {
         if (this.userReview.text === this.reviewText && this.userReview.rating === this.reviewRating) return;
-        this.snackbar = false;
 
         await this.$axios.$put(`/reviews/${this.userReview.id}`, {
           rating: this.reviewRating,
@@ -178,8 +164,7 @@ export default {
         });
         await this.$fetch();
 
-        this.snackbar = true;
-        this.snackbarText = "Отзыв успешно изменён!";
+        this.$nuxt.$emit("snackbarCall", "Отзыв успешно изменён!");
       } else {
         await this.$axios.$post(`/reviews/${this.product.id}`, {
           rating: this.reviewRating,
@@ -187,20 +172,16 @@ export default {
         });
         await this.$fetch();
 
-        this.snackbar = true;
-        this.snackbarText = "Отзыв успешно добавлен!";
+        this.$nuxt.$emit("snackbarCall", "Отзыв успешно добавлен!");
       }
     },
     async deleteReview() {
-      this.snackbar = false;
-
       await this.$axios.$delete(`/reviews/${this.userReview.id}`);
       await this.$fetch();
 
-      this.snackbar = true;
-      this.snackbarText = "Отзыв успешно удалён!";
+      this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");
 
-      this.reviewRating = 0;
+      this.reviewRating = 3;
       this.reviewText = "";
     }
   }
