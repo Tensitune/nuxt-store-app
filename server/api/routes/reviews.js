@@ -1,4 +1,4 @@
-const { check } = require("express-validator");
+const { body } = require("express-validator");
 const { getPagedRows, validationResult } = require("../helpers");
 
 const { UserMiddleware } = require("../middleware");
@@ -11,8 +11,8 @@ module.exports = (api, app) => {
 
   api.post("/reviews/:productId",
     UserMiddleware,
-    check("rating").notEmpty(),
-    check("text").notEmpty(),
+    body("rating").notEmpty().isFloat(),
+    body("text").notEmpty(),
     async (req, res) => {
       const product = await app.db.findOne("products", { id: req.params.productId });
       if (!product) return res.json({ status: "error", error: "Такого товара не существует" });
@@ -33,8 +33,8 @@ module.exports = (api, app) => {
 
   api.put("/reviews/:reviewId",
     UserMiddleware,
-    check("rating").notEmpty(),
-    check("text").notEmpty(),
+    body("rating").notEmpty().isFloat(),
+    body("text").notEmpty(),
     async (req, res) => {
       const review = await app.db.findOne("reviews", { id: req.params.reviewId });
       if (!review) return res.json({ status: "error", error: "Такого отзыва не существует" });

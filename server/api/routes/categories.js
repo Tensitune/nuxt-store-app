@@ -1,4 +1,4 @@
-const { check } = require("express-validator");
+const { body } = require("express-validator");
 const { getPagedRows, validationResult } = require("../helpers");
 
 const { AdminMiddleware } = require("../middleware");
@@ -35,8 +35,8 @@ module.exports = (api, app) => {
 
   api.post("/categories",
     AdminMiddleware,
-    check("title").notEmpty(),
-    check("icon").notEmpty(),
+    body("title").notEmpty().isLength({ max: 50 }).trim().escape(),
+    body("icon").notEmpty().isLength({ max: 25 }),
     async (req, res) => {
       const error = validationResult(req);
       if (error) return res.json({ status: "error", error: error.msg });
@@ -52,8 +52,8 @@ module.exports = (api, app) => {
 
   api.put("/categories/:categoryId",
     AdminMiddleware,
-    check("title").notEmpty(),
-    check("icon").notEmpty(),
+    body("title").notEmpty().isLength({ max: 50 }).trim().escape(),
+    body("icon").notEmpty().isLength({ max: 25 }),
     async (req, res) => {
       const category = await app.db.findOne("categories", { id: req.params.categoryId });
       if (!category) return res.json({ status: "error", error: "Такой категории не существует" });

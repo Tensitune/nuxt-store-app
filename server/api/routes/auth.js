@@ -1,15 +1,15 @@
 const bcrypt = require("bcrypt");
 
-const { check } = require("express-validator");
+const { body } = require("express-validator");
 const { validationResult } = require("../helpers");
 
 module.exports = (api, app) => {
   api.post("/auth/signin",
-    check("username").notEmpty().custom(async value => {
+    body("username", "Требуется имя пользователя").notEmpty().custom(async value => {
       const user = await app.db.findOne("users", { username: value });
       if (!user) return Promise.reject(new Error("Такого пользователя не существует"));
     }),
-    check("password", "Требуется пароль").notEmpty(),
+    body("password", "Требуется пароль").notEmpty(),
     async (req, res) => {
       const error = validationResult(req);
       if (error) return res.json({ status: "error", error: error.msg });
@@ -29,13 +29,15 @@ module.exports = (api, app) => {
   );
 
   api.post("/auth/signup",
-    check("username").notEmpty().custom(async value => {
+    body("username", "Требуется имя пользователя").notEmpty().isLength({ max: 25 }).custom(async value => {
       const user = await app.db.findOne("users", { username: value });
       if (user) return Promise.reject(new Error("Имя пользователя уже занято"));
     }),
-    check("password", "Требуется пароль").notEmpty(),
-    check("firstname", "Требуется имя").notEmpty(),
-    check("lastname", "Требуется фамилия").notEmpty(),
+    body("password", "Требуется пароль").notEmpty().isLength({ min: 3 }),
+    body("firstname", "Требуется имя").notEmpty().isLength({ max: 25 }),
+    body("lastname", "Требуется фамилия").notEmpty().isLength({ max: 25 }),
+    body("phone").isLength({ max: 16 }),
+    body("address").isLength({ max: 255 }),
     async (req, res) => {
       const error = validationResult(req);
       if (error) return res.json({ status: "error", error: error.msg });

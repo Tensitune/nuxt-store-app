@@ -1,4 +1,4 @@
-const { check } = require("express-validator");
+const { body } = require("express-validator");
 const { getPagedRows, validationResult } = require("../helpers");
 
 const { AdminMiddleware } = require("../middleware");
@@ -63,14 +63,14 @@ module.exports = (api, app) => {
 
   api.post("/products",
     AdminMiddleware,
-    check("catId").notEmpty().custom(async value => {
+    body("catId").notEmpty().custom(async value => {
       const category = await app.db.findOne("categories", { id: value });
       if (!category) return Promise.reject(new Error("Такой категории не существует"));
     }),
-    check("title").notEmpty(),
-    check("description").notEmpty(),
-    check("price").notEmpty(),
-    check("stock").notEmpty(),
+    body("title").notEmpty().isLength({ max: 80 }),
+    body("description").notEmpty(),
+    body("price").notEmpty().isInt(),
+    body("stock").notEmpty().isInt(),
     async (req, res) => {
       const error = validationResult(req);
       if (error) return res.json({ status: "error", error: error.msg });

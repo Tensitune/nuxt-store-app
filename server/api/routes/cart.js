@@ -1,4 +1,4 @@
-const { check } = require("express-validator");
+const { body } = require("express-validator");
 const { validationResult } = require("../helpers");
 
 const { UserMiddleware } = require("../middleware");
@@ -20,14 +20,14 @@ module.exports = (api, app) => {
 
   api.post("/cart",
     UserMiddleware,
-    check("productId").notEmpty().custom(async (value, { req }) => {
+    body("productId").notEmpty().isInt().custom(async (value, { req }) => {
       let cartId = (await app.db.findOne("shopping_carts", { userId: req.session.user.id })).id;
       if (!cartId) await app.db.insert("shopping_carts", { userId: req.session.user.id }).then(id => (cartId = id));
 
       const category = await app.db.findOne("cart_items", { cartId, productId: value });
       if (category) return Promise.reject(new Error("Этот товар уже есть в вашей корзине"));
     }),
-    check("quantity").notEmpty(),
+    body("quantity", "Требуется количество").notEmpty().isInt(),
     async (req, res) => {
       const error = validationResult(req);
       if (error) return res.json({ status: "error", error: error.msg });
@@ -47,7 +47,7 @@ module.exports = (api, app) => {
 
   api.put("/cart/:productId",
     UserMiddleware,
-    check("quantity").notEmpty(),
+    body("quantity").notEmpty().isInt(),
     async (req, res) => {
       const product = await app.db.findOne("products", { id: req.params.productId });
       if (!product) return res.json({ status: "error", error: "Такого товара не существует" });
