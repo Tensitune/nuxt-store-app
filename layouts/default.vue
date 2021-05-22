@@ -24,6 +24,12 @@
             <v-list-item-title>Корзина</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item>
+          <v-row align="center" justify="center">
+            <ButtonFeedback />
+          </v-row>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -36,6 +42,8 @@
           <v-icon>{{ item.icon }}</v-icon>
           <h4>{{ item.title }}</h4>
         </v-btn>
+
+        <ButtonFeedback />
 
         <v-btn v-if="user" to="/cart" class="mx-1" router text>
           <v-badge v-if="cartItems" class="mr-2" color="green" :content="cartItems.length" overlap bordered>
@@ -158,11 +166,6 @@ export default {
         icon: "mdi-shopping-outline",
         title: "Магазины",
         to: "/shops"
-      },
-      {
-        icon: "mdi-email-outline",
-        title: "Обратная связь",
-        to: "/feedback"
       }
     ],
     footerIcons: [

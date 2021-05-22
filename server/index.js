@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.db = require("./db");
+app.sendMail = require("./nodemailer");
 require("./api")(app);
 
 module.exports = app;
