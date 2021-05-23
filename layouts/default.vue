@@ -46,7 +46,7 @@
         <ButtonFeedback />
 
         <v-btn v-if="user" to="/cart" class="mx-1" router text>
-          <v-badge v-if="cartItems" class="mr-2" color="green" :content="cartItems.length" overlap bordered>
+          <v-badge v-if="cartItems" class="mr-2" color="deep-purple lighten-2" :content="cartItems.length" overlap>
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
           <v-icon v-else>mdi-cart-outline</v-icon>
