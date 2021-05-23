@@ -14,7 +14,7 @@
 
         <v-list-item v-if="user" to="/cart" router exact>
           <v-list-item-action>
-            <v-badge v-if="cart" color="green" :content="cart.length" overlap bordered>
+            <v-badge v-if="cart.length" color="green" :content="cart.length" overlap bordered>
               <v-icon>mdi-cart-outline</v-icon>
             </v-badge>
             <v-icon v-else>mdi-cart-outline</v-icon>
@@ -46,7 +46,7 @@
         <ButtonFeedback />
 
         <v-btn v-if="user" to="/cart" class="mx-1" router text>
-          <v-badge v-if="cart" class="mr-2" color="deep-purple lighten-2" :content="cart.length" overlap>
+          <v-badge v-if="cart.length" class="mr-2" color="deep-purple lighten-2" :content="cart.length" overlap>
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
           <v-icon v-else>mdi-cart-outline</v-icon>
