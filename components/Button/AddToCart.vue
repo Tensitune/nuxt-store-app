@@ -69,12 +69,12 @@ export default {
   }),
   computed: {
     ...mapState({
-      cartItems: state => state.userCart
+      cart: state => state.userCart
     }),
     inShoppingCart() {
-      if (!this.cartItems) return false;
+      if (!this.cart) return false;
 
-      const product = this.cartItems.filter(product => product.id === this.productId)[0];
+      const product = this.cart.filter(product => product.id === this.productId)[0];
       if (product) return true;
 
       return false;

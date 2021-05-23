@@ -14,7 +14,7 @@
 
         <v-list-item v-if="user" to="/cart" router exact>
           <v-list-item-action>
-            <v-badge v-if="cartItems" color="green" :content="cartItems.length" overlap bordered>
+            <v-badge v-if="cart" color="green" :content="cart.length" overlap bordered>
               <v-icon>mdi-cart-outline</v-icon>
             </v-badge>
             <v-icon v-else>mdi-cart-outline</v-icon>
@@ -46,7 +46,7 @@
         <ButtonFeedback />
 
         <v-btn v-if="user" to="/cart" class="mx-1" router text>
-          <v-badge v-if="cartItems" class="mr-2" color="deep-purple lighten-2" :content="cartItems.length" overlap>
+          <v-badge v-if="cart" class="mr-2" color="deep-purple lighten-2" :content="cart.length" overlap>
             <v-icon>mdi-cart-outline</v-icon>
           </v-badge>
           <v-icon v-else>mdi-cart-outline</v-icon>
@@ -178,7 +178,7 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user,
-      cartItems: state => state.userCart
+      cart: state => state.userCart
     }),
     showDrawer() {
       const disabledSizes = ["xs", "sm", "md"];
@@ -198,7 +198,7 @@ export default {
     const getCartItems = (await this.$axios.get("/cart")).data;
     if (getCartItems.status === "error") return;
 
-    this.$store.commit("SET_CART", getCartItems.data);
+    this.$store.commit("setCart", getCartItems.data);
   },
   methods: {
     async signOut() {

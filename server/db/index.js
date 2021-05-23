@@ -79,12 +79,12 @@ class DB {
     return result;
   }
 
-  delete = async (table, id) => {
-    const sql = `DELETE FROM ${table} WHERE id = ?`;
-    const result = await query(sql, [id]);
-    const affectedRows = result ? result.affectedRows : 0;
+  delete = async (table, params = {}) => {
+    const { columns, values } = multipleColumnWhere(params);
+    const sql = `DELETE FROM ${table} WHERE ${columns}`;
+    const result = await query(sql, [...values]);
 
-    return affectedRows;
+    return result;
   }
 }
 

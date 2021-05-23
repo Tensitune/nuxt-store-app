@@ -76,10 +76,7 @@ module.exports = (api, app) => {
     let cartId = (await app.db.findOne("shopping_carts", { userId: req.session.user.id })).id;
     if (!cartId) await app.db.insert("shopping_carts", { userId: req.session.user.id }).then(id => (cartId = id));
 
-    const cartItem = await app.db.findOne("cart_items", { cartId, productId: req.params.productId });
-    if (!cartItem) return res.json({ status: "error", error: "Этот товар в корзине не найден" });
-
-    await app.db.delete("cart_items", cartItem.id);
+    await app.db.delete("cart_items", { cartId, productId: req.params.productId });
     res.json({ status: "success" });
   });
 };

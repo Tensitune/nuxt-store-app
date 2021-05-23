@@ -117,10 +117,7 @@ module.exports = (api, app) => {
     const product = await app.db.findOne("products", { id: req.params.productId });
     if (!product) return res.json({ status: "error", error: "Такого товара не существует" });
 
-    const error = validationResult(req);
-    if (error) return res.json({ status: "error", error: error.msg });
-
-    await app.db.delete("products", req.params.productId);
+    await app.db.delete("products", { id: req.params.productId });
     res.json({ status: "success" });
   });
 };

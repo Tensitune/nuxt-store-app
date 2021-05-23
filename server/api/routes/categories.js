@@ -74,10 +74,7 @@ module.exports = (api, app) => {
     const category = await app.db.findOne("categories", { id: req.params.categoryId });
     if (!category) return res.json({ status: "error", error: "Такой категории не существует" });
 
-    const error = validationResult(req);
-    if (error) return res.json({ status: "error", error: error.msg });
-
-    await app.db.delete("categories", req.params.categoryId);
+    await app.db.delete("categories", { id: req.params.categoryId });
     res.json({ status: "success" });
   });
 };

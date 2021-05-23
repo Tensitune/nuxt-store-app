@@ -79,6 +79,7 @@ export default {
       await this.$axios.$delete(`/reviews/${this.review.id}`);
       this.dialog = false;
 
+      this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");
       this.$emit("onReviewDelete");
     }
   }

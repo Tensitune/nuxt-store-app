@@ -63,7 +63,7 @@ module.exports = (api, app) => {
       return res.json({ status: "error", error: "Вы не можете удалить чужой отзыв" });
     }
 
-    await app.db.delete("reviews", req.params.reviewId);
+    await app.db.delete("reviews", { id: req.params.reviewId });
     res.json({ status: "success" });
   });
 };
