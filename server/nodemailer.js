@@ -20,7 +20,7 @@ class Mailer {
 
   sendMail = (message) => {
     this.transporter.sendMail(message, err => {
-      if (err) return console.error(err);
+      if (err) console.error(err);
     });
   }
 }

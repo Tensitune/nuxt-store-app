@@ -2,15 +2,15 @@ const express = require("express");
 const api = express.Router();
 
 const fs = require("fs");
-const { join } = require("path");
-
-const path = join(__dirname, `/routes`);
-const routes = fs.readdirSync(path).filter(file => file.endsWith(".js"));
+const path = require("path");
 
 module.exports = app => {
-  for (const route of routes) {
-    require(path + `/${route}`)(api, app);
-  }
+  fs.readdirSync(path.join(__dirname, "routes")).forEach(file => {
+    const filePath = path.join(__dirname, "routes", file);
+    if (fs.statSync(filePath).isFile() && path.extname(filePath) === ".js") {
+      require(filePath)(api, app);
+    }
+  });
 
   app.use("/api", api);
 };

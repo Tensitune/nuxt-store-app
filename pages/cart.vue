@@ -148,7 +148,7 @@ export default {
 
           this.$refs.form.reset();
           this.$nuxt.$emit("snackbarCall", "Вы успешно провели оплату товаров в корзине!");
-          this.$store.commit("clearCart");
+          this.$store.commit("setCart", []);
         }).catch(err => {
           console.log(err);
           this.$nuxt.$emit("snackbarCall", "Что-то пошло не так при оплате", "red", "mdi-close-octagon");

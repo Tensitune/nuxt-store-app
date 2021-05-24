@@ -10,9 +10,6 @@ export const mutations = {
   setCart(state, cart) {
     state.userCart = cart;
   },
-  clearCart(state) {
-    state.userCart = [];
-  },
   removeCartItem(state, productId) {
     if (!state.userCart) return;
     state.userCart = state.userCart.filter(item => item.id !== productId);
