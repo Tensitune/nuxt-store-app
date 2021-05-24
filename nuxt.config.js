@@ -1,5 +1,8 @@
 const isDev = process.env.NODE_ENV !== "production";
 
+const host = process.env.HOST || "localhost";
+const port = process.env.PORT || 3000;
+
 export default {
   /*
   ** Nuxt rendering mode
@@ -80,7 +83,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: "http://localhost:3000/api",
+    baseURL: `http://${host}:${port}/api`,
     proxyHeaders: false,
     credentials: false
   },
