@@ -1,106 +1,81 @@
 const { body } = require("express-validator");
-const { getPagedRows, validationResult } = require("../helpers");
+const helpers = require("../helpers");
 
 const { AdminMiddleware } = require("../middleware");
 
 module.exports = (api, app) => {
+  const Category = app.db.models.Category;
+  const Product = app.db.models.Product;
+  const Review = app.db.models.Review;
+
   api.get("/products", async (req, res) => {
-    const whereParams = {};
+    const options = { where: {} };
+    helpers.setProductQueryOptions(req.query, options, Product);
 
-    if (req.query.title) {
-      whereParams.title = { like: req.query.title };
+    if (req.query.isRecommended) options.where.isRecommended = true;
+
+    const products = await Product.findAndCountAll(options);
+    await helpers.setProductsRating(products.rows, Review);
+
+    if (req.query.rating) {
+      const rating = parseFloat(req.query.rating) || 4.0;
+      products.rows = products.rows.filter(product => product.rating >= rating)
+        .sort((a, b) => (a.rating > b.rating));
     }
 
-    if (req.query.priceFrom || req.query.priceTo) {
-      whereParams.price = {};
-      if (req.query.priceFrom) whereParams.price.greaterThan = req.query.priceFrom;
-      if (req.query.priceTo) whereParams.price.lessThan = req.query.priceTo;
-    }
-
-    const orderParam = {};
-    if (req.query.orderBy) {
-      const orderBy = req.query.orderBy.split(",");
-      orderParam.by = orderBy[0];
-      orderParam.desc = orderBy[1] === "true";
-    }
-
-    const products = await getPagedRows(app.db, "products", whereParams, req.query, orderParam);
-    res.json({ status: "success", data: products });
-  });
-
-  api.get("/products/recommended", async (req, res) => {
-    const products = await getPagedRows(app.db, "products", { recommended: true }, req.query);
-    res.json({ status: "success", data: products });
-  });
-
-  api.get("/products/popular", async (req, res) => {
-    let products = await app.db.find("products");
-
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      const reviews = await app.db.find("reviews", { productId: product.id });
-
-      if (reviews.length) {
-        const rating = [];
-        reviews.map(review => rating.push(review.rating));
-        products[i].rating = rating.reduce((a, b) => a + b) / rating.length;
-      } else {
-        products[i].rating = 0;
-      }
-    }
-    products = await products.filter(product => {
-      if (product.rating < 4) return false;
-      return true;
-    }).sort((a, b) => (a.rating > b.rating));
-
-    res.json({ status: "success", data: products.slice(0, 9) });
+    res.json(products);
   });
 
   api.get("/products/:productId", async (req, res) => {
-    const products = await app.db.findOne("products", { id: req.params.productId });
-    res.json({ status: "success", data: products });
+    const product = await Product.findByPk(req.params.productId);
+    await helpers.setProductsRating([product], Review);
+
+    res.json(product);
   });
 
   api.post("/products",
     AdminMiddleware,
-    body("catId").notEmpty().custom(async value => {
-      const category = await app.db.findOne("categories", { id: value });
+    body("categoryId").notEmpty().isInt().custom(async value => {
+      const category = await Category.findByPk(value);
       if (!category) return Promise.reject(new Error("Такой категории не существует"));
     }),
     body("title").notEmpty().isLength({ max: 80 }),
     body("description").notEmpty(),
     body("price").notEmpty().isInt(),
     body("stock").notEmpty().isInt(),
+    body("isRecommended").notEmpty().isBoolean(),
     async (req, res) => {
-      const error = validationResult(req);
-      if (error) return res.json({ status: "error", error: error.msg });
+      const error = helpers.validationResult(req);
+      if (error) return res.json({ success: false, error: error.msg });
 
-      await app.db.insert("products", {
-        catId: req.body.catId,
+      await Product.create({
+        categoryId: req.body.categoryId,
         title: req.body.title,
         description: req.body.description,
         price: req.body.price,
-        stock: req.body.stock
+        stock: req.body.stock,
+        isRecommended: req.body.isRecommended
       });
 
-      res.json({ status: "success" });
+      res.json({ success: true });
     }
   );
 
   api.put("/products/:productId", AdminMiddleware, async (req, res) => {
-    const product = await app.db.findOne("products", { id: req.params.productId });
-    if (!product) return res.json({ status: "error", error: "Такого товара не существует" });
+    const product = await Product.findByPk(req.params.productId);
+    if (!product) return res.json({ success: false, error: "Такого товара не существует" });
 
-    const error = validationResult(req);
-    if (error) return res.json({ status: "error", error: error.msg });
+    const error = helpers.validationResult(req);
+    if (error) return res.json({ success: false, error: error.msg });
 
     const data = {};
 
-    if (req.body.catId) {
-      const category = await app.db.findOne("categories", { id: req.body.catId });
-      if (!category) return res.json({ status: "error", error: "Такой категории не существует" });
+    const categoryId = parseInt(req.body.categoryId);
+    if (categoryId) {
+      const category = await Category.findByPk(categoryId);
+      if (!category) return res.json({ success: false, error: "Такой категории не существует" });
 
-      data.catId = req.body.catId;
+      data.categoryId = categoryId;
     }
 
     if (req.body.title) data.title = req.body.title;
@@ -108,16 +83,17 @@ module.exports = (api, app) => {
     if (req.body.price) data.price = req.body.price;
     if (req.body.stock) data.stock = req.body.stock;
     if (req.body.thumbnail) data.thumbnail = req.body.thumbnail;
+    if (req.body.isRecommended) data.thumbnail = req.body.thumbnail;
 
-    await app.db.update("products", req.params.productId, data);
-    res.json({ status: "success" });
+    await Product.update(data, { where: { id: req.params.productId } });
+    res.json({ success: true });
   });
 
   api.delete("/products/:productId", AdminMiddleware, async (req, res) => {
-    const product = await app.db.findOne("products", { id: req.params.productId });
-    if (!product) return res.json({ status: "error", error: "Такого товара не существует" });
+    const product = await Product.findByPk(req.params.productId);
+    if (!product) return res.json({ success: false, error: "Такого товара не существует" });
 
-    await app.db.delete("products", { id: req.params.productId });
-    res.json({ status: "success" });
+    await Product.destroy({ where: { id: req.params.productId } });
+    res.json({ success: true });
   });
 };

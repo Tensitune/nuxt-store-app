@@ -72,11 +72,11 @@ export default {
     })
   },
   async mounted() {
-    this.reviewUser = (await this.$axios.$get(`/users/${this.review.userId}`)).data;
+    this.reviewUser = (await this.$axios.get(`/users/${this.review.userId}`)).data;
   },
   methods: {
     async deleteReview() {
-      await this.$axios.$delete(`/reviews/${this.review.id}`);
+      await this.$axios.delete(`/reviews/${this.review.id}`);
       this.dialog = false;
 
       this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");

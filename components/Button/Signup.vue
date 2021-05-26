@@ -116,7 +116,7 @@ export default {
 
       const isValid = this.$refs.form.validate();
       if (isValid) {
-        this.$axios.$post("/auth/signup", this.signupData).then(res => {
+        this.$axios.post("/auth/signup", this.signupData).then(res => {
           this.error = "";
           this.loading = false;
 

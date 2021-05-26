@@ -1,15 +1,18 @@
 module.exports = (api, app) => {
+  const User = app.db.models.User;
+
   api.get("/users/:userId", async (req, res) => {
-    const user = await app.db.findOne("users", { id: req.params.userId });
+    const user = await User.findByPk(req.params.userId);
+    if (!user) return res.json(null);
 
     const data = {
       id: user.id,
       username: user.username,
       firstname: user.firstname,
       lastname: user.lastname,
-      admin: user.admin
+      isAdmin: user.isAdmin
     };
 
-    res.json({ status: "success", data });
+    res.json(data);
   });
 };

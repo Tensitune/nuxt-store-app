@@ -12,9 +12,9 @@
             <div class="d-flex flex-row align-center">
               <v-rating :value="ratingValue" color="amber" dense half-increments readonly size="24" />
               <h3 class="mx-1">
-                {{ reviews.length ? `${rating}` : "Нет отзывов" }}
+                {{ reviews.count ? product.rating : "Нет отзывов" }}
               </h3>
-              <h4 v-if="reviews.length" class="grey--text">({{ reviewsText }})</h4>
+              <h4 v-if="reviews.count" class="grey--text">({{ reviewsText }})</h4>
             </div>
 
             <v-divider class="my-4" />
@@ -64,12 +64,12 @@
       </v-form>
     </v-sheet>
 
-    <v-sheet v-if="reviews.length" class="pa-4 mb-3" elevation="4" rounded="lg">
+    <v-sheet v-if="reviews.count" class="pa-4 mb-3" elevation="4" rounded="lg">
       <div class="title mb-4">Отзывы</div>
 
-      <Pagination :count="reviews.length" :limit="perPage" @onPageChange="onPageChange">
+      <Pagination :count="reviews.count" :limit="perPage" @onPageChange="onPageChange">
         <v-row>
-          <v-col v-for="review of paginationReviews" :key="review.id" cols="12">
+          <v-col v-for="review of reviews.rows" :key="review.id" cols="12">
             <CardReview :review="review" @onReviewDelete="onReviewDelete" />
           </v-col>
         </v-row>
@@ -83,10 +83,10 @@ import { mapState } from "vuex";
 
 export default {
   async asyncData({ params, error, $axios }) {
-    const product = (await $axios.$get(`/products/${params.id}`)).data;
+    const { data: product } = await $axios.get(`/products/${params.id}`);
     if (!product) return error({ statusCode: 404, message: "Товар не найден" });
 
-    const reviews = (await $axios.$get(`/reviews/${params.id}?getAll=true`)).data;
+    const { data: reviews } = await $axios.get(`/reviews/${params.id}?page=1&perPage=9`);
     return { product, reviews };
   },
   data: () => ({
@@ -98,7 +98,7 @@ export default {
     reviews: []
   }),
   async fetch() {
-    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data;
+    this.reviews = (await this.$axios.get(`/reviews/${this.product.id}?page=${this.page}&perPage=${this.perPage}`)).data;
   },
   computed: {
     ...mapState({
@@ -106,28 +106,17 @@ export default {
     }),
     userReview() {
       if (!this.user) return false;
-      const review = this.reviews.filter(review => review.userId === this.user.id);
+      const review = this.reviews.rows.filter(review => review.userId === this.user.id);
       return review[0] ?? false;
     },
-    paginationReviews() {
-      return this.reviews.filter(review => (review.id !== this.userReview.id)).slice(this.page - 1, this.page * this.perPage);
-    },
-    rating() {
-      let rating = [];
-
-      if (this.reviews.length) {
-        this.reviews.map(review => rating.push(review.rating));
-        rating = (rating.reduce((a, b) => a + b) / rating.length).toFixed(1);
-      }
-
-      return rating;
-    },
     ratingValue() {
-      const value = (Math.round(this.rating * 2) / 2).toFixed(1);
+      if (!this.product.rating) return 0;
+
+      const value = (Math.round(this.product.rating * 2) / 2).toFixed(1);
       return parseFloat(value);
     },
     reviewsText() {
-      let text = this.reviews.length.toString();
+      let text = this.reviews.count.toString();
       const lastNumber = parseInt(text.slice(-1));
 
       if (lastNumber === 1) text += " отзыв";
@@ -146,8 +135,9 @@ export default {
     this.reviewText = this.userReview.text;
   },
   methods: {
-    onPageChange(page) {
+    async onPageChange(page) {
       this.page = page;
+      await this.$fetch();
     },
     async onReviewDelete() {
       await this.$fetch();
@@ -156,7 +146,7 @@ export default {
       if (this.userReview) {
         if (this.userReview.text === this.reviewText && this.userReview.rating === this.reviewRating) return;
 
-        await this.$axios.$put(`/reviews/${this.userReview.id}`, {
+        await this.$axios.put(`/reviews/${this.userReview.id}`, {
           rating: this.reviewRating,
           text: this.reviewText
         });
@@ -164,7 +154,7 @@ export default {
 
         this.$nuxt.$emit("snackbarCall", "Отзыв успешно изменён!");
       } else {
-        await this.$axios.$post(`/reviews/${this.product.id}`, {
+        await this.$axios.post(`/reviews/${this.product.id}`, {
           rating: this.reviewRating,
           text: this.reviewText
         });
@@ -174,7 +164,7 @@ export default {
       }
     },
     async deleteReview() {
-      await this.$axios.$delete(`/reviews/${this.userReview.id}`);
+      await this.$axios.delete(`/reviews/${this.userReview.id}`);
       await this.$fetch();
 
       this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");

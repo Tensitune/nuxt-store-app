@@ -16,16 +16,12 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.db = require("./db");
-app.sendMail = require("./nodemailer");
-require("./api")(app);
+async function init() {
+  app.db = await require("./db")();
+  app.sendMail = require("./nodemailer");
+  require("./api")(app);
+}
+
+init();
 
 module.exports = app;
-if (require.main === module) {
-  const host = process.env.HOST || "127.0.0.1";
-  const port = process.env.PORT || 3001;
-
-  app.listen(port, host, () => {
-    console.log(`Server listening on http://${host}:${port}`);
-  });
-}

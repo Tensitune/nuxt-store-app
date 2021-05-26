@@ -14,7 +14,7 @@
       <v-row align="center" class="pl-2">
         <v-rating :value="ratingValue" color="amber" dense half-increments readonly size="14" />
         <div class="grey--text ml-1">
-          {{ reviews.length ? `${rating} (${reviews.length})` : "Нет отзывов" }}
+          {{ product.rating || "Нет отзывов" }}
         </div>
       </v-row>
 
@@ -60,28 +60,14 @@ export default {
       default: "auto"
     }
   },
-  data: () => ({
-    reviews: []
-  }),
-  async fetch() {
-    this.reviews = (await this.$axios.$get(`/reviews/${this.product.id}?getAll=true`)).data;
-  },
   computed: {
     ...mapState({
       user: state => state.user
     }),
-    rating() {
-      let rating = [];
-
-      if (this.reviews.length) {
-        this.reviews.map(review => rating.push(review.rating));
-        rating = (rating.reduce((a, b) => a + b) / rating.length).toFixed(1);
-      }
-
-      return rating;
-    },
     ratingValue() {
-      const value = (Math.round(this.rating * 2) / 2).toFixed(1);
+      if (!this.product.rating) return 0;
+
+      const value = (Math.round(this.product.rating * 2) / 2).toFixed(1);
       return parseFloat(value);
     },
     price() {

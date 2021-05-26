@@ -86,7 +86,7 @@ export default {
 
       const isValid = this.$refs.form.validate();
       if (isValid) {
-        this.$axios.$post("/cart", {
+        this.$axios.post("/cart", {
           productId: this.productId,
           quantity: this.quantity
         }).then(res => {

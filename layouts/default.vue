@@ -195,10 +195,8 @@ export default {
     });
   },
   async mounted() {
-    const getCartItems = (await this.$axios.get("/cart")).data;
-    if (getCartItems.status === "error") return;
-
-    this.$store.commit("setCart", getCartItems.data);
+    const { data: cartItems } = await this.$axios.get("/cart");
+    this.$store.commit("setCart", cartItems);
   },
   methods: {
     async signOut() {

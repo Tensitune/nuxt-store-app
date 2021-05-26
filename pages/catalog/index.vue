@@ -74,9 +74,9 @@
           @click:append-outer="$fetch"
         />
 
-        <Pagination v-if="productsCount && !loading" :count="productsCount" :limit="perPage" @onPageChange="onPageChange">
+        <Pagination v-if="products.count && !loading" :count="products.count" :limit="perPage" @onPageChange="onPageChange">
           <v-row>
-            <v-col v-for="product of products" :key="product.id" cols="auto">
+            <v-col v-for="product of products.rows" :key="product.id" cols="auto">
               <CardProduct :product="product" max-width="425px" />
             </v-col>
           </v-row>
@@ -97,17 +97,14 @@
 <script>
 export default {
   async asyncData({ $axios }) {
-    const categories = (await $axios.$get("/categories")).data ?? [];
+    const { data: categories } = await $axios.get("/categories");
+    const { data: products } = await $axios.get("/products?page=1&perPage=6&order=price");
 
-    const productsCount = (await $axios.$get("/products")).data ?? 0;
-    const products = (await $axios.$get("/products?page=1&perPage=6&orderBy=price")).data ?? [];
-
-    return { categories, productsCount, products };
+    return { categories, products };
   },
   data: () => ({
     menu: false,
     loading: false,
-    productsCount: 0,
     perPage: 6,
     activeCategory: 0,
     search: "",
@@ -116,19 +113,15 @@ export default {
     sliderRange: [1, 999999],
     categories: [],
     products: [],
-    order: {
-      by: "price",
-      desc: false
-    }
+    order: "ASC",
+    orderColumn: "price"
   }),
   async fetch() {
     this.loading = true;
 
     const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : "/products";
-    this.productsCount = (await this.$axios.$get(productsUrl + "?title=" + this.searchText + "&priceFrom=" + this.sliderRange[0] +
-      "&priceTo=" + this.sliderRange[1])).data ?? 0;
-    this.products = (await this.$axios.$get(productsUrl + "?title=" + this.searchText + "&page=1&perPage=" + this.perPage + "&priceFrom=" +
-      this.sliderRange[0] + "&priceTo=" + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? [];
+    this.products = (await this.$axios.get(productsUrl + "?title=" + this.searchText + "&page=1&perPage=" + this.perPage + "&priceFrom=" +
+      this.sliderRange[0] + "&priceTo=" + this.sliderRange[1] + `&order=${this.orderColumn},${this.order}`)).data;
 
     this.loading = false;
   },
@@ -155,16 +148,16 @@ export default {
     async sort(val) {
       switch (val) {
         case "Сначала недорогие":
-          this.order.by = "price";
-          this.order.desc = false;
+          this.order = "ASC";
+          this.orderColumn = "price";
           break;
         case "Сначала дорогие":
-          this.order.by = "price";
-          this.order.desc = true;
+          this.order = "DESC";
+          this.orderColumn = "price";
           break;
         case "По наименованию":
-          this.order.by = "title";
-          this.order.desc = false;
+          this.order = "ASC";
+          this.orderColumn = "title";
           break;
         default:
           break;
@@ -176,8 +169,8 @@ export default {
   methods: {
     async onPageChange(page) {
       const productsUrl = this.categoryFilter ? `/categories/${this.categoryFilter}` : "/products";
-      this.products = (await this.$axios.$get(productsUrl + "?title=" + this.searchText + "&page=" + page + "&perPage=" + this.perPage +
-        "&priceFrom=" + this.sliderRange[0] + "&priceTo=" + this.sliderRange[1] + `&orderBy=${this.order.by},${this.order.desc}`)).data ?? [];
+      this.products = (await this.$axios.get(productsUrl + "?title=" + this.searchText + "&page=" + page + "&perPage=" + this.perPage +
+        "&priceFrom=" + this.sliderRange[0] + "&priceTo=" + this.sliderRange[1] + `&order=${this.orderColumn},${this.order}`)).data;
     }
   }
 };

@@ -55,7 +55,7 @@ export default {
   }),
   methods: {
     signIn() {
-      this.$axios.$post("/auth/signin", this.signinData).then(res => {
+      this.$axios.post("/auth/signin", this.signinData).then(res => {
         if (res.status === "error") {
           this.error = res.error;
           return;

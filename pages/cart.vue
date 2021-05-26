@@ -136,7 +136,7 @@ export default {
     checkOut() {
       const isValid = this.$refs.form.validate();
       if (isValid) {
-        this.$axios.$post("/cart/checkout", {
+        this.$axios.post("/cart/checkout", {
           email: this.email.value,
           delivery: this.delivery.enabled,
           address: this.delivery.address
@@ -164,11 +164,11 @@ export default {
 
       if (cartItem.quantity < 2) {
         this.$store.commit("removeCartItem", productId);
-        return await this.$axios.$delete(`/cart/${productId}`);
+        return await this.$axios.delete(`/cart/${productId}`);
       }
 
       this.$store.commit("reduceCartQuantity", productId);
-      await this.$axios.$put(`/cart/${productId}`, {
+      await this.$axios.put(`/cart/${productId}`, {
         quantity: cartItem.quantity
       });
     },
@@ -177,13 +177,13 @@ export default {
       if (!cartItem) return;
 
       this.$store.commit("increaseCartQuantity", productId);
-      await this.$axios.$put(`/cart/${productId}`, {
+      await this.$axios.put(`/cart/${productId}`, {
         quantity: cartItem.quantity
       });
     },
     async removeItem(productId) {
       this.$store.commit("removeCartItem", productId);
-      await this.$axios.$delete(`/cart/${productId}`);
+      await this.$axios.delete(`/cart/${productId}`);
     }
   }
 };

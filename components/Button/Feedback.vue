@@ -80,7 +80,7 @@ export default {
 
       const isValid = this.$refs.form.validate();
       if (isValid) {
-        this.$axios.$post("/feedback", this.feedback).then(res => {
+        this.$axios.post("/feedback", this.feedback).then(res => {
           if (res.status === "error") {
             this.error = res.error;
             return;

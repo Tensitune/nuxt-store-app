@@ -4,33 +4,34 @@ const { body } = require("express-validator");
 const { validationResult } = require("../helpers");
 
 module.exports = (api, app) => {
+  const User = app.db.models.User;
+  const Cart = app.db.models.Cart;
+
   api.post("/auth/signin",
-    body("username", "Требуется имя пользователя").notEmpty().custom(async value => {
-      const user = await app.db.findOne("users", { username: value });
-      if (!user) return Promise.reject(new Error("Такого пользователя не существует"));
-    }),
+    body("username", "Требуется имя пользователя").notEmpty(),
     body("password", "Требуется пароль").notEmpty(),
     async (req, res) => {
       const error = validationResult(req);
-      if (error) return res.json({ status: "error", error: error.msg });
+      if (error) return res.json({ success: false, error: error.msg });
 
-      const user = await app.db.findOne("users", { username: req.body.username });
+      const user = await User.findOne({ where: { username: req.body.username } });
+      if (!user) return res.json({ success: false, error: "Такого пользователя не существует" });
+
       const passwordCheck = await bcrypt.compare(req.body.password, user.password);
-
       if (!passwordCheck) {
-        return res.json({ status: "error", error: "Неверный пароль" });
+        return res.json({ success: false, error: "Неверный пароль" });
       }
 
       delete user.password;
       req.session.user = user;
 
-      res.json({ status: "success" });
+      res.json({ success: true });
     }
   );
 
   api.post("/auth/signup",
     body("username", "Требуется имя пользователя").notEmpty().isLength({ max: 25 }).custom(async value => {
-      const user = await app.db.findOne("users", { username: value });
+      const user = await User.findOne({ where: { username: value } });
       if (user) return Promise.reject(new Error("Имя пользователя уже занято"));
     }),
     body("password", "Требуется пароль").notEmpty().isLength({ min: 3 }),
@@ -40,27 +41,24 @@ module.exports = (api, app) => {
     body("address").isLength({ max: 255 }),
     async (req, res) => {
       const error = validationResult(req);
-      if (error) return res.json({ status: "error", error: error.msg });
+      if (error) return res.json({ success: false, error: error.msg });
 
       const password = bcrypt.hashSync(req.body.password, 10);
-      await app.db.insert("users", {
+      const user = await User.create({
         username: req.body.username,
         password,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         phone: req.body.phone ?? "",
         address: req.body.address ?? ""
-      }).then(async (userId) => {
-        await app.db.insert("shopping_carts", { userId });
-
-        const user = await app.db.findOne("users", { id: userId });
-        if (user) {
-          delete user.password;
-          req.session.user = user;
-        }
-
-        res.json({ status: "success" });
       });
+
+      await Cart.create({ userId: user.id });
+
+      delete user.password;
+      req.session.user = user;
+
+      res.json({ success: true });
     }
   );
 

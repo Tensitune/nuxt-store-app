@@ -1,36 +1,26 @@
 const { body } = require("express-validator");
-const { getPagedRows, validationResult } = require("../helpers");
+const helpers = require("../helpers");
 
 const { AdminMiddleware } = require("../middleware");
 
 module.exports = (api, app) => {
-  api.get("/categories", async (req, res) => {
-    const categories = await app.db.find("categories");
-    res.json({ status: "success", data: categories });
-  });
+  const Category = app.db.models.Category;
+  const Product = app.db.models.Product;
+  const Review = app.db.models.Review;
 
   api.get("/categories/:categoryId", async (req, res) => {
-    const whereParams = { catId: req.params.categoryId };
+    const options = { where: { categoryId: req.params.categoryId } };
+    helpers.setProductQueryOptions(req.query, options, Product);
 
-    if (req.query.title) {
-      whereParams.title = { like: req.query.title };
-    }
+    const products = await Product.findAndCountAll(options);
+    await helpers.setProductsRating(products.rows, Review);
 
-    if (req.query.priceFrom || req.query.priceTo) {
-      whereParams.price = {};
-      if (req.query.priceFrom) whereParams.price.greaterThan = req.query.priceFrom;
-      if (req.query.priceTo) whereParams.price.lessThan = req.query.priceTo;
-    }
+    res.json(products);
+  });
 
-    const orderParam = {};
-    if (req.query.orderBy) {
-      const orderBy = req.query.orderBy.split(",");
-      orderParam.by = orderBy[0];
-      orderParam.desc = orderBy[1] === "true";
-    }
-
-    const products = await getPagedRows(app.db, "products", whereParams, req.query, orderParam);
-    res.json({ status: "success", data: products });
+  api.get("/categories", async (req, res) => {
+    const categories = await Category.findAll();
+    res.json(categories);
   });
 
   api.post("/categories",
@@ -38,15 +28,15 @@ module.exports = (api, app) => {
     body("title").notEmpty().isLength({ max: 50 }).trim().escape(),
     body("icon").notEmpty().isLength({ max: 25 }),
     async (req, res) => {
-      const error = validationResult(req);
-      if (error) return res.json({ status: "error", error: error.msg });
+      const error = helpers.validationResult(req);
+      if (error) return res.json({ success: false, error: error.msg });
 
-      await app.db.insert("categories", {
+      await Category.create({
         title: req.body.title,
         icon: req.body.icon
       });
 
-      res.json({ status: "success" });
+      res.json({ success: true });
     }
   );
 
@@ -55,26 +45,26 @@ module.exports = (api, app) => {
     body("title").notEmpty().isLength({ max: 50 }).trim().escape(),
     body("icon").notEmpty().isLength({ max: 25 }),
     async (req, res) => {
-      const category = await app.db.findOne("categories", { id: req.params.categoryId });
-      if (!category) return res.json({ status: "error", error: "Такой категории не существует" });
+      const category = await Category.findByPk(req.params.categoryId);
+      if (!category) return res.json({ success: false, error: "Такой категории не существует" });
 
-      const error = validationResult(req);
-      if (error) return res.json({ status: "error", error: error.msg });
+      const error = helpers.validationResult(req);
+      if (error) return res.json({ success: false, error: error.msg });
 
-      await app.db.update("categories", req.params.categoryId, {
+      await Category.update({
         title: req.body.title,
         icon: req.body.icon
-      });
+      }, { where: { id: req.params.categoryId } });
 
-      res.json({ status: "success" });
+      res.json({ success: true });
     }
   );
 
   api.delete("/categories/:categoryId", AdminMiddleware, async (req, res) => {
-    const category = await app.db.findOne("categories", { id: req.params.categoryId });
-    if (!category) return res.json({ status: "error", error: "Такой категории не существует" });
+    const category = await Category.findByPk(req.params.categoryId);
+    if (!category) return res.json({ success: false, error: "Такой категории не существует" });
 
-    await app.db.delete("categories", { id: req.params.categoryId });
-    res.json({ status: "success" });
+    await Category.destroy({ where: { id: req.params.categoryId } });
+    res.json({ success: true });
   });
 };

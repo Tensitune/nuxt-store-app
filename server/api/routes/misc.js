@@ -7,7 +7,7 @@ module.exports = (api, app) => {
     body("text", "Требуется текст").notEmpty(),
     (req, res) => {
       const error = validationResult(req);
-      if (error) return res.json({ status: "error", error: error.msg });
+      if (error) return res.json({ success: false, error: error.msg });
 
       const message = {
         to: process.env.MAILER_USER,
@@ -24,7 +24,7 @@ module.exports = (api, app) => {
       };
 
       app.sendMail(message);
-      res.json({ status: "success" });
+      res.json({ success: true });
     }
   );
 };

@@ -3,7 +3,7 @@
     <v-parallax height="500" src="/img/parallax/material.jpg">
       <v-container>
         <v-carousel cycle hide-delimiter-background>
-          <v-carousel-item v-for="product of recommendedProducts" :key="product.id">
+          <v-carousel-item v-for="product of recommendedProducts.rows" :key="product.id">
             <v-row class="my-6" align="center" justify="center">
               <v-col cols="auto">
                 <CardProduct :product="product" max-width="90%" />
@@ -20,8 +20,8 @@
         <v-btn text plain small router to="/catalog">Все товары</v-btn>
       </div>
 
-      <v-row v-if="popularProducts" class="my-3" justify="center" align="center">
-        <v-col v-for="product of popularProducts" :key="product.id" cols="auto">
+      <v-row v-if="popularProducts.rows" class="my-3" justify="center" align="center">
+        <v-col v-for="product of popularProducts.rows" :key="product.id" cols="auto">
           <CardProduct :product="product" max-width="360px" />
         </v-col>
       </v-row>
@@ -35,8 +35,8 @@
 <script>
 export default {
   async asyncData({ $axios }) {
-    const recommendedProducts = (await $axios.$get("/products/recommended?page=1&perPage=9")).data;
-    const popularProducts = (await $axios.$get("/products/popular")).data;
+    const { data: recommendedProducts } = await $axios.get("/products?page=1&perPage=9&recommended=true");
+    const { data: popularProducts } = await $axios.get("/products?page=1&perPage=9&rating=4");
     return { recommendedProducts, popularProducts };
   }
 };
