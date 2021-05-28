@@ -65,9 +65,6 @@ module.exports = (api, app) => {
     const product = await Product.findByPk(req.params.productId);
     if (!product) return res.json({ success: false, error: "Такого товара не существует" });
 
-    const error = helpers.validationResult(req);
-    if (error) return res.json({ success: false, error: error.msg });
-
     const data = {};
 
     const categoryId = parseInt(req.body.categoryId);

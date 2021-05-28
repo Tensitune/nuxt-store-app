@@ -8,18 +8,18 @@
             <v-row>
               <v-col class="d-flex" cols="12">
                 <v-text-field
-                  v-model="email.value"
-                  :rules="email.rules"
+                  v-model="email"
+                  :rules="[rules.required, rules.email]"
                   label="Почта"
                   hint="Введите адрес эл. почты для отправки чека"
                   persistent-hint
                   required
                 />
-                <v-checkbox v-model="delivery.enabled" class="ml-4" label="Доставка" />
               </v-col>
-              <v-col v-if="delivery.enabled" cols="12">
+              <v-col cols="12">
                 <v-text-field
                   v-model="delivery.address"
+                  :rules="[rules.required]"
                   label="Адрес доставки"
                   hint="Введите адрес, куда необходимо доставить товары"
                   persistent-hint
@@ -91,19 +91,16 @@ export default {
   data: () => ({
     valid: true,
     delivery: {
-      enabled: false,
       price: 500,
       address: ""
     },
-    email: {
-      value: "",
-      rules: [
-        v => !!v || "Это поле обязательно для заполнения",
-        v => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(v) || "Неверный формат адреса электронной почты.";
-        }
-      ]
+    email: "",
+    rules: {
+      required: v => !!v || "Это поле обязательно для заполнения",
+      email: v => {
+        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return pattern.test(v) || "Неверный формат адреса электронной почты.";
+      }
     },
     tableHeaders: [
       { align: "left", value: "left" },
@@ -116,7 +113,7 @@ export default {
       cart: state => state.userCart
     }),
     tableItems() {
-      const deliveryPrice = this.delivery.enabled ? this.delivery.price : 0;
+      const deliveryPrice = this.delivery.price || 0;
 
       let productsTotal = 0;
       if (this.cart) {
@@ -137,8 +134,7 @@ export default {
       const isValid = this.$refs.form.validate();
       if (isValid) {
         this.$axios.post("/cart/checkout", {
-          email: this.email.value,
-          delivery: this.delivery.enabled,
+          email: this.email,
           address: this.delivery.address
         }).then(res => {
           if (res.status === "error") {

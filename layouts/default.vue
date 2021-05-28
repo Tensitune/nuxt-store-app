@@ -161,11 +161,6 @@ export default {
         icon: "mdi-archive-outline",
         title: "Каталог",
         to: "/catalog"
-      },
-      {
-        icon: "mdi-shopping-outline",
-        title: "Магазины",
-        to: "/shops"
       }
     ],
     footerIcons: [

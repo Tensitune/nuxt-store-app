@@ -25,14 +25,10 @@ module.exports = (api, app) => {
   const Product = app.db.models.Product;
 
   api.get("/cart", UserMiddleware, async (req, res) => {
-    let cartId = (await Cart.findOne({ where: { userId: req.session.user.id } }))?.id;
-    if (!cartId) {
-      cartId = (await Cart.create({ userId: req.session.user.id })).id;
-    }
-
+    const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
     const cartItems = await CartItem.findAll({ where: { cartId } });
-    const newCartItems = [];
 
+    const newCartItems = [];
     for (let i = 0; i < cartItems.length; i++) {
       const product = await Product.findByPk(cartItems[i].productId);
       const quantity = cartItems[i].quantity;
@@ -46,25 +42,18 @@ module.exports = (api, app) => {
   api.post("/cart/checkout",
     UserMiddleware,
     body("email").normalizeEmail().isEmail(),
-    body("address").isString(),
+    body("address").notEmpty(),
     async (req, res) => {
       const error = validationResult(req);
       if (error) return res.json({ success: false, error: error.msg });
 
-      let cartId = (await Cart.findOne({ where: { userId: req.session.user.id } }))?.id;
-      if (!cartId) {
-        cartId = (await Cart.create({ userId: req.session.user.id })).id;
-      }
-
+      const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
       const cartItems = await CartItem.findAll({ where: { cartId } });
+
       const deliveryPrice = req.body.address ? 500 : 0;
 
       let itemsText = "";
-      let deliveryText = "";
       let productsTotal = 0;
-
-      if (req.body.address) deliveryText = `<h4>Адрес доставки: ${req.body.address}</h4>`;
-      else deliveryText = "<h4>Вы можете забрать товары в любом нашем магазине, если они есть на складе</h4>";
 
       if (cartItems) {
         itemsText += "<ul>";
@@ -91,7 +80,7 @@ module.exports = (api, app) => {
           <hr>
           <h4>Магазин: Nuxt Store</h4>
           <h4>Эл. почта: ${process.env.MAILER_USER}</h4>
-          ${deliveryText}
+          <h4>Адрес доставки: ${req.body.address}</h4>
           <hr>
           <h4>Товары:</h4>
           ${itemsText}
@@ -112,12 +101,9 @@ module.exports = (api, app) => {
   api.post("/cart",
     UserMiddleware,
     body("productId").notEmpty().isInt().custom(async (value, { req }) => {
-      let cartId = (await Cart.findOne({ where: { userId: req.session.user.id } }))?.id;
-      if (!cartId) {
-        cartId = (await Cart.create({ userId: req.session.user.id })).id;
-      }
-
+      const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
       const cartItem = await CartItem.findOne({ where: { cartId, productId: value } });
+
       if (cartItem) return Promise.reject(new Error("Этот товар уже есть в вашей корзине"));
     }),
     body("quantity", "Требуется количество").notEmpty().isInt(),
@@ -125,11 +111,7 @@ module.exports = (api, app) => {
       const error = validationResult(req);
       if (error) return res.json({ success: false, error: error.msg });
 
-      let cartId = (await Cart.findOne({ where: { userId: req.session.user.id } }))?.id;
-      if (!cartId) {
-        cartId = (await Cart.create({ userId: req.session.user.id })).id;
-      }
-
+      const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
       await CartItem.create({
         cartId,
         productId: req.body.productId,
@@ -150,10 +132,7 @@ module.exports = (api, app) => {
       const error = validationResult(req);
       if (error) return res.json({ success: false, error: error.msg });
 
-      let cartId = (await Cart.findOne({ where: { userId: req.session.user.id } }))?.id;
-      if (!cartId) {
-        cartId = (await Cart.create({ userId: req.session.user.id })).id;
-      }
+      const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
 
       const cartItem = await CartItem.findOne({ where: { cartId, productId: req.params.productId } });
       if (!cartItem) return res.json({ success: false, error: "Этот товар в корзине не найден" });
@@ -167,15 +146,9 @@ module.exports = (api, app) => {
     const product = await Product.findByPk(req.params.productId);
     if (!product) return res.json({ success: false, error: "Такого товара не существует" });
 
-    const error = validationResult(req);
-    if (error) return res.json({ success: false, error: error.msg });
-
-    let cartId = (await Cart.findOne({ where: { userId: req.session.user.id } }))?.id;
-    if (!cartId) {
-      cartId = (await Cart.create({ userId: req.session.user.id })).id;
-    }
-
+    const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
     await CartItem.destroy({ where: { cartId, productId: req.params.productId } });
+
     res.json({ success: true });
   });
 };
