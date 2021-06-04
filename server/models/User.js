@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       firstname: DataTypes.STRING(25),
       lastname: DataTypes.STRING(25),
       phone: DataTypes.STRING(16),
-      address: DataTypes.STRING,
       isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false

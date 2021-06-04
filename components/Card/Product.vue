@@ -4,7 +4,7 @@
       <v-progress-linear color="deep-purple" height="10" indeterminate />
     </template>
 
-    <v-img :src="product.thumbnail" height="200" contain />
+    <v-img :src="thumbnail" height="200" contain />
 
     <v-card-title>
       <nuxt-link :to="`/catalog/view/${product.id}`">{{ product.title }}</nuxt-link>
@@ -72,6 +72,18 @@ export default {
     },
     price() {
       return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB" }).format(this.product.price);
+    },
+    thumbnail() {
+      if (!this.product) return "";
+
+      let thumbnail = "";
+      try {
+        thumbnail = require(`~/assets/products/${this.product.id}.jpg`);
+      } catch (err) {
+        console.log(`Изображение товара ${this.product.title} (${this.product.id}.jpg) не найдено`);
+      }
+
+      return thumbnail;
     }
   }
 };

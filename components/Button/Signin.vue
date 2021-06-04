@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
     <template #activator="{ on, attrs }">
-      <v-btn color="primary" outlined rounded v-bind="attrs" v-on="on">
+      <v-btn color="deep-purple lighten-2" outlined rounded v-bind="attrs" v-on="on">
         Войти
       </v-btn>
     </template>
@@ -54,10 +54,10 @@ export default {
     }
   }),
   methods: {
-    signIn() {
-      this.$axios.post("/auth/signin", this.signinData).then(res => {
-        if (res.status === "error") {
-          this.error = res.error;
+    async signIn() {
+      await this.$axios.post("/auth/signin", this.signinData).then(res => {
+        if (!res.data.success) {
+          this.error = res.data.error || "Что-то пошло не так";
           return;
         }
 

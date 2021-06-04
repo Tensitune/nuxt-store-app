@@ -7,22 +7,11 @@ function formatCurrency(price) {
   return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB" }).format(price);
 }
 
-function makeRandomId(length) {
-  const result = [];
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const charactersLength = characters.length;
-
-  for (let i = 0; i < length; i++) {
-    result.push(characters.charAt(Math.floor(Math.random() * charactersLength)));
-  }
-
-  return result.join("");
-}
-
 module.exports = (api, app) => {
   const Cart = app.db.models.Cart;
   const CartItem = app.db.models.CartItem;
   const Product = app.db.models.Product;
+  const Order = app.db.models.Order;
 
   api.get("/cart", UserMiddleware, async (req, res) => {
     const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
@@ -50,41 +39,61 @@ module.exports = (api, app) => {
       const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
       const cartItems = await CartItem.findAll({ where: { cartId } });
 
+      if (!cartItems.length) return res.json({ success: false, error: "Товары в корзине не найдены" });
+
       const deliveryPrice = req.body.address ? 500 : 0;
 
       let itemsText = "";
       let productsTotal = 0;
 
-      if (cartItems) {
-        itemsText += "<ul>";
+      for (const item of cartItems) {
+        const product = await Product.findByPk(item.productId);
+        if (!product) continue;
 
-        for (const item of cartItems) {
-          const product = await Product.findByPk(item.productId);
-          if (!product) continue;
+        itemsText += `
+          <tr>
+            <td align="center">${item.productId}</td>
+            <td>${product.title}</td>
+            <td align="center">${formatCurrency(product.price)}</td>
+            <td align="center">${item.quantity} шт.</td>
+          </tr>
+        `;
 
-          itemsText += `<li>${product.title} - ${formatCurrency(product.price)} - ${item.quantity} шт.</li><br>`;
-          productsTotal += product.price * item.quantity;
-        }
-
-        itemsText += "</ul>";
+        productsTotal += product.price * item.quantity;
       }
 
-      const chequeId = makeRandomId(8);
+      const order = await Order.create({
+        userId: req.session.user.id,
+        cartItems,
+        deliveryAddress: req.body.address
+      });
 
       const message = {
         to: req.body.email,
-        subject: `Чек оплаты Nuxt Store #${chequeId}`,
+        subject: `Чек оплаты Nuxt Store`,
         html: `
           <h2>Чек оплаты товаров для ${req.session.user.username}</h2>
-          <h2>ID чека: #${chequeId}</h2>
+          <h2>Код заказа: ${order.id}</h2>
+
           <hr>
+
           <h4>Магазин: Nuxt Store</h4>
           <h4>Эл. почта: ${process.env.MAILER_USER}</h4>
           <h4>Адрес доставки: ${req.body.address}</h4>
+
           <hr>
+
           <h4>Товары:</h4>
-          ${itemsText}
-          <hr>
+          <table border="1" cellspacing="0">
+            <tr>
+              <th>#</th>
+              <th>Наименование товара</th>
+              <th>Цена</th>
+              <th>Количество</th>
+            </tr>
+            ${itemsText}
+          </table>
+
           <h4>Цена за товары: ${formatCurrency(productsTotal)}</h4>
           <h4>Цена за доставку: ${formatCurrency(deliveryPrice)}</h4>
           <h4>Итого: ${formatCurrency(productsTotal + deliveryPrice)}</h4>

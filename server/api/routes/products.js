@@ -1,5 +1,10 @@
+const fs = require("fs");
+const path = require("path");
+
 const { body } = require("express-validator");
 const helpers = require("../helpers");
+
+const Busboy = require("busboy");
 
 const { AdminMiddleware } = require("../middleware");
 
@@ -28,7 +33,9 @@ module.exports = (api, app) => {
 
   api.get("/products/:productId", async (req, res) => {
     const product = await Product.findByPk(req.params.productId);
-    await helpers.setProductsRating([product], Review);
+    if (product) {
+      await helpers.setProductsRating([product], Review);
+    }
 
     res.json(product);
   });
@@ -61,6 +68,28 @@ module.exports = (api, app) => {
     }
   );
 
+  // something like that
+  api.post("/products/:productId/upload", async (req, res) => {
+    const productId = parseInt(req.params.productId);
+    if (!productId) return res.json({ success: false, error: "Неверный ID товара" });
+
+    const product = await Product.findByPk(productId);
+    if (!product) return res.json({ success: false, error: "Такого товара не существует" });
+
+    const busboy = new Busboy({ headers: req.headers });
+
+    busboy.on("file", (fieldname, file, filename) => {
+      const uploadPath = path.join(__dirname, "../../../assets/products", productId + ".jpg");
+      file.pipe(fs.createWriteStream(uploadPath));
+    });
+
+    busboy.on("finish", () => {
+      res.json({ success: true });
+    });
+
+    return req.pipe(busboy);
+  });
+
   api.put("/products/:productId", AdminMiddleware, async (req, res) => {
     const product = await Product.findByPk(req.params.productId);
     if (!product) return res.json({ success: false, error: "Такого товара не существует" });
@@ -79,7 +108,6 @@ module.exports = (api, app) => {
     if (req.body.description) data.description = req.body.description;
     if (req.body.price) data.price = req.body.price;
     if (req.body.stock) data.stock = req.body.stock;
-    if (req.body.thumbnail) data.thumbnail = req.body.thumbnail;
     if (req.body.isRecommended) data.thumbnail = req.body.thumbnail;
 
     await Product.update(data, { where: { id: req.params.productId } });

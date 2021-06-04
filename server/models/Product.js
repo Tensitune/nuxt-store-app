@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       description: DataTypes.TEXT,
       price: DataTypes.INTEGER,
       stock: DataTypes.INTEGER,
-      thumbnail: DataTypes.STRING,
       isRecommended: {
         type: DataTypes.BOOLEAN,
         defaultValue: false

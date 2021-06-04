@@ -10,7 +10,7 @@
         <div class="subtitle-1" style="line-height: 1.2rem">{{ review.text }}</div>
       </v-list-item-content>
 
-      <v-list-item-action v-if="user && user.admin">
+      <v-list-item-action v-if="user && user.isAdmin">
         <v-dialog v-model="dialog" max-width="400px">
           <template #activator="{ on, attrs }">
             <v-btn color="red lighten-1" icon v-bind="attrs" v-on="on">

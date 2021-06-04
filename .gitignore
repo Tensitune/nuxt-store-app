@@ -93,4 +93,4 @@ sw.*
 package-lock.json
 
 # Static stuff
-static/img/products
+assets/products

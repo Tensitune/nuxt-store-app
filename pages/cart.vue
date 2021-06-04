@@ -51,7 +51,7 @@
           <v-sheet class="pa-4" elevation="2" outlined>
             <v-row align="center">
               <v-col cols="2">
-                <v-img :src="item.thumbnail" height="150" contain />
+                <v-img :src="getThumbnail(item.id)" height="150" contain />
               </v-col>
               <v-col cols="8">
                 <div class="title">{{ item.title }}</div>
@@ -130,26 +130,36 @@ export default {
     }
   },
   methods: {
-    checkOut() {
-      const isValid = this.$refs.form.validate();
-      if (isValid) {
-        this.$axios.post("/cart/checkout", {
-          email: this.email,
-          address: this.delivery.address
-        }).then(res => {
-          if (res.status === "error") {
-            this.error = res.error;
-            return;
-          }
-
-          this.$refs.form.reset();
-          this.$nuxt.$emit("snackbarCall", "Вы успешно провели оплату товаров в корзине!");
-          this.$store.commit("setCart", []);
-        }).catch(err => {
-          console.log(err);
-          this.$nuxt.$emit("snackbarCall", "Что-то пошло не так при оплате", "red", "mdi-close-octagon");
-        });
+    getThumbnail(productId) {
+      let thumbnail = "";
+      try {
+        thumbnail = require(`~/assets/products/${productId}.jpg`);
+      } catch (err) {
+        console.log(`Изображение товара '${productId}.jpg' не найдено`);
       }
+
+      return thumbnail;
+    },
+    async checkOut() {
+      const isValid = this.$refs.form.validate();
+      if (!isValid) return;
+
+      await this.$axios.post("/cart/checkout", {
+        email: this.email,
+        address: this.delivery.address
+      }).then(res => {
+        if (!res.data.success) {
+          this.error = res.data.error || "Что-то пошло не так";
+          return;
+        }
+
+        this.$refs.form.reset();
+        this.$nuxt.$emit("snackbarCall", "Вы успешно провели оплату товаров в корзине!");
+        this.$store.commit("setCart", []);
+      }).catch(err => {
+        console.log(err);
+        this.$nuxt.$emit("snackbarCall", "Что-то пошло не так при оплате", "red", "mdi-close-octagon");
+      });
     },
     formatCurrency(price) {
       return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB" }).format(price);

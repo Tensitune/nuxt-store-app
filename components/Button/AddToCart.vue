@@ -57,7 +57,7 @@ export default {
   data: () => ({
     valid: true,
     dialog: false,
-    quantity: 0,
+    quantity: 1,
     error: "",
     rules: {
       required: v => !!v || "Это поле обязательно для заполнения",
@@ -81,35 +81,30 @@ export default {
     }
   },
   methods: {
-    addToShoppingCart() {
-      this.loading = true;
-
+    async addToShoppingCart() {
       const isValid = this.$refs.form.validate();
-      if (isValid) {
-        this.$axios.post("/cart", {
-          productId: this.productId,
-          quantity: this.quantity
-        }).then(res => {
-          this.loading = false;
+      if (!isValid) return;
 
-          if (res.status === "error") {
-            this.error = res.error;
-            return;
-          }
+      await this.$axios.post("/cart", {
+        productId: this.productId,
+        quantity: this.quantity
+      }).then(res => {
+        if (!res.data.success) {
+          this.error = res.data.error || "Что-то пошло не так";
+          this.$nuxt.$emit("snackbarCall", "Не удалось добавить товар в корзину.", "red", "mdi-alert");
 
-          this.$refs.form.reset();
-          this.disabled = true;
-          this.dialog = false;
-        }).catch(err => {
-          console.log(err);
-          this.loading = false;
-          this.error = "Что-то пошло не так";
-        });
+          return;
+        }
 
-        return;
-      }
+        this.$refs.form.reset();
+        this.$nuxt.$emit("snackbarCall", "Товар добавлен в корзину.");
 
-      this.loading = false;
+        this.disabled = true;
+        this.dialog = false;
+      }).catch(err => {
+        console.log(err);
+        this.error = "Что-то пошло не так";
+      });
     }
   }
 };

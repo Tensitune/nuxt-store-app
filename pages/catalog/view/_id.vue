@@ -3,7 +3,7 @@
     <v-sheet class="pa-4 my-6" elevation="4" rounded="lg">
       <v-row align="center">
         <v-col cols="4">
-          <v-img :src="product.thumbnail" height="256" contain />
+          <v-img :src="thumbnail" height="256" contain />
         </v-col>
         <v-col cols="8">
           <div class="d-flex flex-column">
@@ -127,6 +127,18 @@ export default {
     },
     price() {
       return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB" }).format(this.product.price);
+    },
+    thumbnail() {
+      if (!this.product) return "";
+
+      let thumbnail = "";
+      try {
+        thumbnail = require(`~/assets/products/${this.product.id}.jpg`);
+      } catch (err) {
+        console.log(`Изображение товара ${this.product.title} (${this.product.id}.jpg) не найдено`);
+      }
+
+      return thumbnail;
     }
   },
   mounted() {

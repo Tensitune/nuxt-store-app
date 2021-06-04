@@ -8,8 +8,8 @@
               <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" max-width="500" offset-x>
                 <template #activator="{ on, attrs }">
                   <v-btn elevation="0" v-bind="attrs" v-on="on">
-                    <v-icon>mdi-folder-outline</v-icon>
-                    <div class="text-truncate">{{ categoryTitle }}</div>
+                    <v-icon>{{ category.icon }}</v-icon>
+                    <div class="text-truncate">{{ category.title }}</div>
                   </v-btn>
                 </template>
 
@@ -25,8 +25,8 @@
                   <div class="pa-4">
                     <v-chip-group v-model="activeCategory" active-class="primary--text" column>
                       <v-chip filter outlined>Все товары</v-chip>
-                      <v-chip v-for="category of categories" :key="category.id" filter outlined>
-                        {{ category.title }}
+                      <v-chip v-for="item of categories" :key="item.id" filter outlined>
+                        {{ item.title }}
                       </v-chip>
                     </v-chip-group>
                   </div>
@@ -126,10 +126,10 @@ export default {
     this.loading = false;
   },
   computed: {
-    categoryTitle() {
-      const tempCategories = [{ id: 0, title: "Все товары" }, ...this.categories];
+    category() {
+      const tempCategories = [{ id: 0, title: "Все товары", icon: "mdi-folder-outline" }, ...this.categories];
       const category = tempCategories.filter(cat => cat.id === (this.categoryFilter))[0];
-      return category.title ?? "Категории";
+      return category || "Категории";
     },
     categoryFilter() {
       return this.activeCategory ?? 0;

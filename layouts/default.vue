@@ -76,7 +76,13 @@
                 Профиль
               </v-list-item-title>
             </v-list-item>
-            <v-list-item v-if="user.admin" link router to="/admin">
+            <v-list-item link router to="/orders">
+              <v-list-item-title class="d-flex justify-start align-center">
+                <v-icon>mdi-clipboard</v-icon>
+                Заказы
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="user.isAdmin" link router to="/admin">
               <v-list-item-title class="d-flex justify-start align-center">
                 <v-icon>mdi-shield-account</v-icon>
                 Админ-панель
@@ -116,7 +122,7 @@
     <v-footer dark :absolute="!fixed" padless>
       <v-card flat tile class="indigo lighten-1 white--text text-center" width="100%">
         <v-card-text>
-          <v-btn v-for="item in footerIcons" :key="item.icon" class="mx-4 white--text" router :href="item.uri" target="_blank" icon>
+          <v-btn v-for="item in footerIcons" :key="item.icon" class="mx-4 white--text" router :href="item.url" target="_blank" icon>
             <v-icon size="24px">{{ item.icon }}</v-icon>
           </v-btn>
         </v-card-text>
@@ -164,10 +170,10 @@ export default {
       }
     ],
     footerIcons: [
-      { icon: "mdi-discord", uri: "https://discord.gg/ETrKUWmCN4" },
-      { icon: "mdi-twitter", uri: "https://twitter.com" },
-      { icon: "mdi-vk", uri: "https://vk.com" },
-      { icon: "mdi-instagram", uri: "https://www.instagram.com" }
+      { icon: "mdi-discord", url: "https://discord.gg/ETrKUWmCN4" },
+      { icon: "mdi-twitter", url: "https://twitter.com" },
+      { icon: "mdi-vk", url: "https://vk.com" },
+      { icon: "mdi-instagram", url: "https://www.instagram.com" }
     ]
   }),
   computed: {

@@ -57,7 +57,7 @@ module.exports = (api, app) => {
       const review = await Review.findByPk(req.params.reviewId);
       if (!review) return res.json({ success: false, error: "Такого отзыва не существует" });
 
-      if (review.userId !== req.session.user.id && !req.session.user.admin) {
+      if (review.userId !== req.session.user.id && !req.session.user.isAdmin) {
         return res.json({ success: false, error: "Вы не можете изменить чужой отзыв" });
       }
 
@@ -77,7 +77,7 @@ module.exports = (api, app) => {
     const review = await Review.findByPk(req.params.reviewId);
     if (!review) return res.json({ success: false, error: "Такого отзыва не существует" });
 
-    if (review.userId !== req.session.user.id && !req.session.user.admin) {
+    if (review.userId !== req.session.user.id && !req.session.user.isAdmin) {
       return res.json({ success: false, error: "Вы не можете удалить чужой отзыв" });
     }
 

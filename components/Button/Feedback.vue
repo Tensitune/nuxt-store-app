@@ -7,7 +7,7 @@
       </v-btn>
     </template>
     <v-form ref="form" v-model="valid" lazy-validation>
-      <v-card :loading="loading">
+      <v-card>
         <v-card-title>
           <span class="headline">Обратная связь</span>
         </v-card-title>
@@ -59,7 +59,6 @@ export default {
   data: () => ({
     valid: true,
     dialog: false,
-    loading: false,
     error: "",
     feedback: {
       email: "",
@@ -74,29 +73,28 @@ export default {
     }
   }),
   methods: {
-    sendMessage() {
+    async sendMessage() {
       this.error = "";
-      this.loading = true;
 
       const isValid = this.$refs.form.validate();
-      if (isValid) {
-        this.$axios.post("/feedback", this.feedback).then(res => {
-          if (res.status === "error") {
-            this.error = res.error;
-            return;
-          }
+      if (!isValid) return;
 
-          this.$refs.form.reset();
-          this.dialog = false;
+      await this.$axios.post("/feedback", this.feedback).then(res => {
+        if (!res.data.success) {
+          this.error = res.data.error || "Что-то пошло не так";
+          this.$nuxt.$emit("snackbarCall", "Не удалось отправить сообщение.", "red", "mdi-alert");
 
-          this.$nuxt.$emit("snackbarCall", "Сообщение успешно отправлено");
-        }).catch(err => {
-          console.log(err);
-          this.error = "Что-то пошло не так";
-        });
-      }
+          return;
+        }
 
-      this.loading = false;
+        this.$refs.form.reset();
+        this.dialog = false;
+
+        this.$nuxt.$emit("snackbarCall", "Сообщение успешно отправлено");
+      }).catch(err => {
+        console.log(err);
+        this.error = "Что-то пошло не так";
+      });
     }
   }
 };

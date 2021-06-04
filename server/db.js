@@ -4,7 +4,7 @@ const consola = require("consola");
 
 const { join } = require("path");
 
-const requireModels = ["User", "Category", "Product", "Review", "Cart", "CartItem"];
+const requireModels = ["User", "Category", "Product", "Review", "Cart", "CartItem", "Order"];
 
 module.exports = async () => {
   const sequelize = new Sequelize({
