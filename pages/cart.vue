@@ -11,7 +11,7 @@
                   v-model="email"
                   :rules="[rules.required, rules.email]"
                   label="Почта"
-                  hint="Введите адрес эл. почты для отправки чека"
+                  hint="Введите адрес эл. почты для отправки квитанции"
                   persistent-hint
                   required
                 />
@@ -27,7 +27,7 @@
                 />
               </v-col>
               <v-col cols="12">
-                <v-btn color="deep-purple lighten-2 white--text" @click="checkOut">Оплатить</v-btn>
+                <v-btn color="deep-purple lighten-2 white--text" @click="checkOut">Заказать</v-btn>
               </v-col>
             </v-row>
           </v-form>
@@ -154,11 +154,11 @@ export default {
         }
 
         this.$refs.form.reset();
-        this.$nuxt.$emit("snackbarCall", "Вы успешно провели оплату товаров в корзине!");
+        this.$nuxt.$emit("snackbarCall", "Вы успешно заказали товары!");
         this.$store.commit("setCart", []);
       }).catch(err => {
         console.log(err);
-        this.$nuxt.$emit("snackbarCall", "Что-то пошло не так при оплате", "red", "mdi-close-octagon");
+        this.$nuxt.$emit("snackbarCall", "Что-то пошло не так при заказе", "red", "mdi-close-octagon");
       });
     },
     formatCurrency(price) {

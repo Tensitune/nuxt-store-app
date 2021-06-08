@@ -28,7 +28,8 @@
     "nodemailer": "^6.6.0",
     "nuxt": "latest",
     "sequelize": "^6.6.2",
-    "vue-lazy-hydration": "*"
+    "vue-lazy-hydration": "*",
+    "vue-phone-number-input": "^1.1.10"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^5.0.0",
@@ -40,7 +41,6 @@
     "eslint-plugin-nuxt": "^2.0.0",
     "node-sass": "^6.0.0",
     "sass": "^1.32.12",
-    "sass-loader": "^10.1.1",
-    "webpack": "^4.46.0"
+    "sass-loader": "^10.1.1"
   }
 }

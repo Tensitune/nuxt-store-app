@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       firstname: DataTypes.STRING(25),
       lastname: DataTypes.STRING(25),
-      phone: DataTypes.STRING(16),
+      phone: DataTypes.STRING(17),
       isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false

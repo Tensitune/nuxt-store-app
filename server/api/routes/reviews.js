@@ -30,7 +30,6 @@ module.exports = (api, app) => {
   api.post("/reviews/:productId",
     UserMiddleware,
     body("rating").notEmpty().isFloat(),
-    body("text").notEmpty(),
     async (req, res) => {
       const product = await Product.findByPk(req.params.productId);
       if (!product) return res.json({ success: false, error: "Такого товара не существует" });
@@ -42,7 +41,7 @@ module.exports = (api, app) => {
         productId: req.params.productId,
         userId: req.session.user.id,
         rating: req.body.rating,
-        text: req.body.text
+        text: req.body.text ?? ""
       });
 
       res.json({ success: true });

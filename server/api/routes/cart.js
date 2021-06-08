@@ -41,7 +41,7 @@ module.exports = (api, app) => {
 
       if (!cartItems.length) return res.json({ success: false, error: "Товары в корзине не найдены" });
 
-      const deliveryPrice = req.body.address ? 500 : 0;
+      const deliveryPrice = req.body.address ? app.config.deliveryPrice : 0;
 
       let itemsText = "";
       let productsTotal = 0;
@@ -60,6 +60,7 @@ module.exports = (api, app) => {
         `;
 
         productsTotal += product.price * item.quantity;
+        await Product.update({ stock: product.stock - item.quantity }, { where: { id: item.productId } });
       }
 
       const order = await Order.create({
@@ -70,15 +71,15 @@ module.exports = (api, app) => {
 
       const message = {
         to: req.body.email,
-        subject: `Чек оплаты Nuxt Store`,
+        subject: `Квитанция Nuxt Store`,
         html: `
-          <h2>Чек оплаты товаров для ${req.session.user.username}</h2>
+          <h2>Квитанция на товары для ${req.session.user.username}</h2>
           <h2>Код заказа: ${order.id}</h2>
 
           <hr>
 
           <h4>Магазин: Nuxt Store</h4>
-          <h4>Эл. почта: ${process.env.MAILER_USER}</h4>
+          <h4>Эл. почта: ${app.config.mailer.email}</h4>
           <h4>Адрес доставки: ${req.body.address}</h4>
 
           <hr>
@@ -120,6 +121,13 @@ module.exports = (api, app) => {
       const error = validationResult(req);
       if (error) return res.json({ success: false, error: error.msg });
 
+      const product = await Product.findByPk(req.body.productId);
+
+      if (!product) return res.json({ success: false, error: "Такого товара не существует" });
+      if (product.stock < req.body.quantity) {
+        return res.json({ success: false, error: "Вы не можете добавить такое количество товара" });
+      }
+
       const cartId = (await Cart.findOrCreate({ where: { userId: req.session.user.id } }))[0].id;
       await CartItem.create({
         cartId,
@@ -137,6 +145,9 @@ module.exports = (api, app) => {
     async (req, res) => {
       const product = await Product.findByPk(req.params.productId);
       if (!product) return res.json({ success: false, error: "Такого товара не существует" });
+      if (product.stock < req.body.quantity) {
+        return res.json({ success: false, error: "Вы не можете добавить такое количество товара" });
+      }
 
       const error = validationResult(req);
       if (error) return res.json({ success: false, error: error.msg });

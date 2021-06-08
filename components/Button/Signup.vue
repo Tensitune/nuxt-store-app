@@ -55,13 +55,11 @@
               />
             </v-col>
             <v-col cols="12">
-              <v-text-field
+              <VuePhoneNumberInput
                 v-model="signupData.phone"
-                :rules="[requiredRules, v => (v && v.length <= 16) || 'Длина должна быть не больше 16 символов.']"
-                label="Телефон"
-                placeholder="+7(123)456-78-90"
-                type="phone"
-                counter="16"
+                :translations="translations"
+                fetch-country
+                no-country-selector
                 required
               />
             </v-col>
@@ -90,6 +88,7 @@ export default {
     dialog: false,
     passwordVisible: false,
     error: "",
+    passwordConfirm: "",
     signupData: {
       username: "",
       password: "",
@@ -97,7 +96,12 @@ export default {
       lastname: "",
       phone: ""
     },
-    passwordConfirm: "",
+    translations: {
+      countrySelectorLabel: "Код страны",
+      countrySelectorError: "Выбор страны",
+      phoneNumberLabel: "Номер телефона",
+      example: "Пример:"
+    },
     requiredRules: v => !!v || "Это поле обязательно для заполнения"
   }),
   methods: {

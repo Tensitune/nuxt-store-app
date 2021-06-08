@@ -39,13 +39,15 @@ export default {
   /*
   ** Global CSS
   */
-  css: ["~/assets/style.scss"],
+  css: ["@/assets/style.scss"],
 
   /*
   ** Plugins to load before mounting the App
   ** https://nuxtjs.org/guide/plugins
   */
-  plugins: [],
+  plugins: [
+    { src: "@/plugins/vue-phone-number-input.js", ssr: false }
+  ],
 
   /*
   ** Auto import components
@@ -72,7 +74,7 @@ export default {
   /*
   ** Server Middleware
   */
-  serverMiddleware: ["~/server"],
+  serverMiddleware: ["@/server"],
 
   router: {
     prefetchLinks: false

@@ -94,3 +94,6 @@ package-lock.json
 
 # Static stuff
 assets/products
+
+# specific
+config.json

@@ -12,6 +12,7 @@ module.exports = (api, app) => {
   const Category = app.db.models.Category;
   const Product = app.db.models.Product;
   const Review = app.db.models.Review;
+  const Order = app.db.models.Order;
 
   api.get("/products", async (req, res) => {
     const options = { where: {} };
@@ -117,6 +118,22 @@ module.exports = (api, app) => {
   api.delete("/products/:productId", AdminMiddleware, async (req, res) => {
     const product = await Product.findByPk(req.params.productId);
     if (!product) return res.json({ success: false, error: "Такого товара не существует" });
+
+    const foundedOrders = [];
+    const orders = await Order.findAll();
+
+    for (const order of orders) {
+      const orderCartItems = JSON.parse(order.cartItems);
+      const filtererItems = orderCartItems.filter(item => item.id === req.params.productId);
+
+      if (filtererItems.length) {
+        foundedOrders.push(order.id);
+      }
+    }
+
+    if (foundedOrders.length) {
+      return res.json({ success: false, error: `Этот товар находиться в заказах c номерами ${foundedOrders}.` });
+    }
 
     await Product.destroy({ where: { id: req.params.productId } });
     res.json({ success: true });

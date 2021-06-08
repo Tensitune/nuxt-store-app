@@ -147,12 +147,16 @@ export default {
     this.reviewText = this.userReview.text;
   },
   methods: {
+    async fetchProduct() {
+      this.product = (await this.$axios.get(`/products/${this.product.id}`)).data;
+    },
     async onPageChange(page) {
       this.page = page;
       await this.$fetch();
     },
     async onReviewDelete() {
       await this.$fetch();
+      await this.fetchProduct();
     },
     async writeReview() {
       if (this.userReview) {
@@ -174,15 +178,19 @@ export default {
 
         this.$nuxt.$emit("snackbarCall", "Отзыв успешно добавлен!");
       }
+
+      await this.fetchProduct();
     },
     async deleteReview() {
       await this.$axios.delete(`/reviews/${this.userReview.id}`);
-      await this.$fetch();
 
-      this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");
+      await this.$fetch();
+      await this.fetchProduct();
 
       this.reviewRating = 3;
       this.reviewText = "";
+
+      this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");
     }
   }
 };

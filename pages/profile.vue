@@ -135,7 +135,10 @@ export default {
           return;
         }
 
-        window.location.reload();
+        this.$nuxt.$emit("snackbarCall", "Вы успешно изменили данные профиля!");
+
+        this.$refs.form.reset();
+        this.editMode = false;
       }).catch(err => {
         console.log(err);
         this.error = "Что-то пошло не так";

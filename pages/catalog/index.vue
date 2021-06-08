@@ -38,29 +38,39 @@
           <v-divider />
 
           <v-list-item>
-            <v-text-field
-              :value="sliderRange[0]"
-              class="mt-0 pt-0"
-              hide-details
-              single-line
-              type="number"
-              @change="$set(sliderRange, 0, $event)"
-            />
-            <span class="mx-2">-</span>
-            <v-text-field
-              :value="sliderRange[1]"
-              class="mt-0 pt-0"
-              hide-details
-              single-line
-              type="number"
-              @change="$set(sliderRange, 1, $event)"
-            />
+            <v-row class="my-2">
+              <v-col class="overline py-0" cols="12">Фильтр по цене</v-col>
+              <v-col class="d-flex align-center py-0" cols="12">
+                <v-text-field
+                  :value="sliderRange[0]"
+                  class="mt-0 pt-0"
+                  hide-details
+                  single-line
+                  type="number"
+                  @change="$set(sliderRange, 0, $event)"
+                />
+                <span class="mx-2">-</span>
+                <v-text-field
+                  :value="sliderRange[1]"
+                  class="mt-0 pt-0"
+                  hide-details
+                  single-line
+                  type="number"
+                  @change="$set(sliderRange, 1, $event)"
+                />
+              </v-col>
+            </v-row>
           </v-list-item>
 
           <v-divider />
 
           <v-list-item>
-            <v-select v-model="sort" :items="sortItems" class="mt-0 pt-0" hide-details single-line />
+            <v-row class="my-2">
+              <v-col class="overline py-0" cols="12">Упорядочить</v-col>
+              <v-col class="py-0" cols="12">
+                <v-select v-model="sort" :items="sortItems" class="mt-0 pt-0" hide-details single-line />
+              </v-col>
+            </v-row>
           </v-list-item>
         </v-card>
       </v-col>

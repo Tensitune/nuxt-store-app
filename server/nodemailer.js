@@ -1,19 +1,19 @@
 const nodemailer = require("nodemailer");
 
 class Mailer {
-  constructor() {
+  constructor(config) {
     this.transporter = nodemailer.createTransport(
       {
-        host: process.env.MAILER_HOST,
-        port: process.env.MAILER_PORT,
-        secure: process.env.MAILER_PORT === "465", // true для 465, false для других портов
+        host: config.host,
+        port: config.port,
+        secure: config.port === 465,
         auth: {
-          user: process.env.MAILER_USER,
-          pass: process.env.MAILER_PASS
+          user: config.email,
+          pass: config.password
         }
       },
       {
-        from: `Node Mailer <${process.env.MAILER_USER}>`
+        from: `Node Mailer <${config.email}>`
       }
     );
   }
@@ -25,4 +25,6 @@ class Mailer {
   }
 }
 
-module.exports = new Mailer().sendMail;
+module.exports = app => {
+  return new Mailer(app.config.mailer).sendMail;
+};

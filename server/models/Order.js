@@ -14,7 +14,11 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0
       },
       cartItems: DataTypes.JSON,
-      deliveryAddress: DataTypes.STRING
+      deliveryAddress: DataTypes.STRING,
+      orderDate: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+      }
     },
     { timestamps: false }
   );

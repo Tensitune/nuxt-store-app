@@ -76,11 +76,18 @@ export default {
   },
   methods: {
     async deleteReview() {
-      await this.$axios.delete(`/reviews/${this.review.id}`);
-      this.dialog = false;
+      await this.$axios.delete(`/reviews/${this.review.id}`).then(res => {
+        if (res.data.success) {
+          this.$emit("onReviewDelete");
+          this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");
 
-      this.$nuxt.$emit("snackbarCall", "Отзыв успешно удалён!");
-      this.$emit("onReviewDelete");
+          return;
+        }
+
+        this.$nuxt.$emit("snackbarCall", "Не удалось удалить отзыв.", "red", "mdi-alert");
+      });
+
+      this.dialog = false;
     }
   }
 };

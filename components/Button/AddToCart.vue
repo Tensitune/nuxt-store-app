@@ -105,6 +105,9 @@ export default {
         console.log(err);
         this.error = "Что-то пошло не так";
       });
+
+      const { data: cartItems } = await this.$axios.get("/cart");
+      this.$store.commit("setCart", cartItems);
     }
   }
 };

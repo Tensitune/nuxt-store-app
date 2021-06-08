@@ -28,7 +28,7 @@
 
     <v-divider class="mx-4" />
 
-    <v-card-actions v-if="user">
+    <v-card-actions v-if="user && product.stock > 0">
       <ButtonAddToCart :product-id="product.id" />
     </v-card-actions>
   </v-card>
