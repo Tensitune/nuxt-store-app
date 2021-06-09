@@ -69,12 +69,14 @@ module.exports = (api, app) => {
         deliveryAddress: req.body.address
       });
 
+      const orderDate = new Date(order.orderDate).toLocaleString("ru");
       const message = {
         to: req.body.email,
         subject: `Квитанция Nuxt Store`,
         html: `
-          <h2>Квитанция на товары для ${req.session.user.username}</h2>
-          <h2>Код заказа: ${order.id}</h2>
+          <h2>Квитанция для ${req.session.user.username}</h2>
+          <h2>Номер заказа: ${order.id}</h2>
+          <h2>Дата заказа: ${orderDate}</h2>
 
           <hr>
 
