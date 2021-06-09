@@ -7,7 +7,8 @@
           <div class="mx-1">{{ reviewUser.username }}</div>
           <v-rating :value="review.rating" class="mb-1" color="amber" dense half-increments readonly size="24" />
         </div>
-        <div class="subtitle-1" style="line-height: 1.2rem">{{ review.text }}</div>
+        <div class="subtitle-1" style="line-height: 1.4rem">{{ review.text }}</div>
+        <div class="overline" style="line-height: 1.4rem">{{ convertDatetime(review.publishedAt) }}</div>
       </v-list-item-content>
 
       <v-list-item-action v-if="user && user.isAdmin">
@@ -88,6 +89,13 @@ export default {
       });
 
       this.dialog = false;
+    },
+    convertDatetime(datetime) {
+      return new Date(datetime).toLocaleString("ru", {
+        day: "numeric",
+        month: "numeric",
+        year: "numeric"
+      });
     }
   }
 };

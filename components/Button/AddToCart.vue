@@ -57,7 +57,7 @@ export default {
   data: () => ({
     valid: true,
     dialog: false,
-    quantity: 1,
+    quantity: "1",
     error: "",
     rules: {
       required: v => !!v || "Это поле обязательно для заполнения",
