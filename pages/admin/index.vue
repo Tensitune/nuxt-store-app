@@ -1,8 +1,11 @@
 <template>
-  <v-container class="py-6">
-    <v-btn v-for="(item, i) of items" :key="i" :to="item.link" class="mx-2" nuxt>
-      {{ item.title }}
-    </v-btn>
+  <v-container>
+    <v-sheet class="pa-4 my-6" elevation="4" rounded="lg">
+      <div class="title mb-4">Панель администратора</div>
+      <v-btn v-for="(item, i) of items" :key="i" :to="item.link" class="mx-2" nuxt>
+        {{ item.title }}
+      </v-btn>
+    </v-sheet>
   </v-container>
 </template>
 
