@@ -57,7 +57,7 @@
                   </template>
 
                   <v-card>
-                    <v-card-title>Вы хотите удалить товар?</v-card-title>
+                    <v-card-title>Вы хотите удалить заказ?</v-card-title>
                     <v-card-actions>
                       <v-spacer />
                       <v-btn color="red lighten-1" text @click="deleteOrder(order.id)">
